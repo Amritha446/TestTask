@@ -1,6 +1,6 @@
 <html>
     <head>
-        <title>Login page</title>
+        <title>signUp page</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" >
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" ></script>
         <link href="css/style.css" rel="stylesheet">
@@ -20,30 +20,37 @@
                         <img src="assets/contactbook.JPG" alt="img" class="sectionImg">
                     </div>
                     <div class="rightSection mb-5">
-                        <h5 class=" heading fs-3 mt-2">LOGIN</h5>
+                        <p class=" heading fs-3 mt-2 ">SIGN UP</p>
                         <form method="post" class="ms-5">
                             <div class="input d-flex-column">
-                               <div class="text-secondary mt-2 ms-4"> Username</div>
+                               <div class="text-secondary mt-3 ms-2"> Full Name</div>
+                                <input type="text" name="fullName" class="inputs">
+                            </div>
+                            <div class="input d-flex-column">
+                               <div class="text-secondary mt-3 ms-2"> Email Id</div>
+                                <input type="text" name="mail" class="inputs">
+                            </div>
+                            <div class="input d-flex-column">
+                               <div class="text-secondary mt-3 ms-2"> Username</div>
                                 <input type="text" name="userName" class="inputs">
                             </div>
                             <div class="input">
-                               <div class="text-secondary mt-2 ms-4"> Password </div>
-                                <input type="password" name="password" class="inputs">
+                               <div class="text-secondary mt-3 ms-2"> Password </div>
+                                <input type="password" name="userPassword1" class="inputs">
                             </div>
-                            <input type="submit" name="submit" value="LogIn" class="btn mt-5">
-                            <div class="text text-secondary mt-3">Or SignIn using</div>
-                            <div class="images d-flex mt-1">
-                                <img src="assets/fb.JPG" alt="img" class="img ">
-                                <img src="assets/google.JPG" alt="img" class="img1">
+                            <div class="input d-flex-column">
+                               <div class="text-secondary mt-3 ms-2"> Confirm Password</div>
+                                <input type="text" name="userPassword2" class="inputs">
                             </div>
-                            <div class="lastSec mt-3 ms-1 ">Dont't have an Account? <a href="signUp.cfm" class="link">SignUp Here!</a></div>
+                            <input type="submit" name="submit" value="Register" class="btn mt-3">
+                            <div class="lastSec mt-3 ms-1">Already have an Account? <a href="login.cfm" class="link">LogIn Here!</a></div>
                         </form>
                     </div>
                 </div>
             </div>
             <cfif structKeyExists(form,"submit")>
                 <cfset local.loginObj=createObject("component","component.logic.cfc")>
-                <cfset local.result=local.loginObj.validation(form.userName,form.password)>
+                <cfset local.result=local.loginObj.signIn(form.fullName,form.mail,form.userName,form.userPassword1,form.userPassword2)>
             </cfif>
             </cfoutput>
     </body>
