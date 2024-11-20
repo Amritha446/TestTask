@@ -21,7 +21,7 @@
                     </div>
                     <div class="rightSection mb-5">
                         <p class=" heading fs-3 mt-2 ">SIGN UP</p>
-                        <form method="post" class="ms-5">
+                        <form method="post" class="ms-5" enctype="multipart/form-data">
                             <div class="input d-flex-column">
                                <div class="text-secondary mt-3 ms-2"> Full Name</div>
                                 <input type="text" name="fullName" class="inputs">
@@ -40,18 +40,28 @@
                             </div>
                             <div class="input d-flex-column">
                                <div class="text-secondary mt-3 ms-2"> Confirm Password</div>
-                                <input type="text" name="userPassword2" class="inputs">
+                                <input type="password" name="userPassword2" class="inputs">
                             </div>
-                            <input type="submit" name="submit" value="Register" class="btn mt-3">
+                            <div class="input d-flex-column">
+                               <div class="text-secondary mt-3 ms-2"> Choose Profile pic</div>
+                                <input type="file" name="profile" class="inputs">
+                            </div>
+                            <input type="submit" name="submit" value="Register" class="btn mt-3" onClick="return validation()">
                             <div class="lastSec mt-3 ms-1">Already have an Account? <a href="login.cfm" class="link">LogIn Here!</a></div>
                         </form>
                     </div>
                 </div>
             </div>
             <cfif structKeyExists(form,"submit")>
-                <cfset local.loginObj=createObject("component","component.logic.cfc")>
-                <cfset local.result=local.loginObj.signIn(form.fullName,form.mail,form.userName,form.userPassword1,form.userPassword2)>
+                <cfset local.loginObj=createObject("component","components.logic")>
+                <cfset local.result=local.loginObj.signIn(form.fullName,form.mail,form.userName,form.userPassword1,form.userPassword2,form.profile)>
+                <cfif local.result == "true">
+                    <cflocation url="login.cfm" addToken="no">
+                <cfelse>
+                    <div class="text-danger">Try with another Username, Username should not contain any spaces.</div>
+                </cfif>
             </cfif>
             </cfoutput>
+            
     </body>
 </html>

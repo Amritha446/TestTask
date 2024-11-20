@@ -1,8 +1,8 @@
 <cfcomponent>
     <cffunction name="validateLogin" access="public" returnType="boolean">
         <cfargument  name="userName">
-        <cfargument  name="password">
-        <cfset local.encrypted_pass = Hash(#arguments.password#, 'SHA-512')/>
+        <cfargument  name="userPassword1">
+        <cfset local.encrypted_pass = Hash(#arguments.userPassword1#, 'SHA-512')/>
         <cfquery name="qcheck" datasource="data_base1">
             SELECT password
             FROM customer1
@@ -10,7 +10,7 @@
         </cfquery>
         <cfif qcheck.password EQ "#local.encrypted_pass#">
             <cfquery name="getUser" datasource="data_base1">
-                select CustomerID,userName from customer1 where 
+                select CustomerID,userName,password,profile from customer1 where 
                 userName=<cfqueryparam value="#arguments.userName#" cfsqltype="cf_sql_varchar">
                 AND password=<cfqueryparam value="#local.encrypted_pass#" cfsqltype="cf_sql_varchar">
             </cfquery>
@@ -19,6 +19,7 @@
                 <cfset session.userId = "#getUser.CustomerId#">
                 <cfset session.userPassword= "#getUser.password#">
                 <cfset session.userName="#getUser.userName#">
+                <cfset session.profile="#getUser.profile#">
                 <cfreturn true>
             </cfif>
         <cfelse>
@@ -33,6 +34,10 @@
         <cfargument  name="userName">
         <cfargument  name="userPassword1">
         <cfargument  name="userPassword2">
+        <cfargument  name="profile">
+        <cfset local.path = expandPath("./assets")>
+        <cffile  action="upload" destination="#local.path#" nameConflict="makeUnique">
+        <cfset local.val=cffile.clientFile> 
         <cfset local.encrypted_pass1 = Hash(arguments.userPassword1, 'SHA-512')/>
         <cfset local.encrypted_pass2 = Hash(arguments.userPassword2, 'SHA-512')/>
         <cfif local.encrypted_pass1 EQ local.encrypted_pass2>
@@ -41,16 +46,18 @@
             </cfif>
         
             <cfquery name="checkUser" datasource="data_base1">
-                SELECT userName FROM customer1 WHERE userName=<cfqueryparam value="#arguments.userNamee#" cfsqltype="cf_sql_varchar">  
+                SELECT userName FROM customer1 WHERE userName=<cfqueryparam value="#arguments.userName#" cfsqltype="cf_sql_varchar">  
             </cfquery>
 
             <cfif checkUser.RecordCount EQ 0>
                 <cfquery name="insertDetails" datasource="data_base1">
-                    insert into customer1(fullName,mail,userName,password) values(<cfqueryparam value="#arguments.fullName#" cfsqltype="cf_sql_varchar">,
+                    insert into customer1(fullName,mail,userName,password,profile) values(<cfqueryparam value="#arguments.fullName#" cfsqltype="cf_sql_varchar">,
                     <cfqueryparam value="#arguments.mail#" cfsqltype="cf_sql_varchar">,
                     <cfqueryparam value="#arguments.userName#" cfsqltype="cf_sql_varchar">,
-                    <cfqueryparam value="#local.encrypted_pass1#" cfsqltype="cf_sql_varchar">)
+                    <cfqueryparam value="#local.encrypted_pass1#" cfsqltype="cf_sql_varchar">,
+                    <cfqueryparam value="#local.val#" cfsqltype="cf_sql_varchar">)
                 </cfquery>
+                
                 <cfreturn true> 
             <cfelse>
                 <cfreturn false>
@@ -60,12 +67,124 @@
             <cfreturn false>
         </cfif>
     </cffunction>
-    
-    <cffunction  name="select" access="public" returnType="query">
-        <cfquery name="pagesList" datasource="data_base1">
-            select page_id,page_name,page_description from page where 
-            CreatedBy=<cfqueryparam value="#session.userName#" cfsqltype="cf_sql_varchar">
+
+    <cffunction  name="createContact" access="public" returnType="any">
+        <cfargument  name="title">
+        <cfargument  name="text1">
+        <cfargument  name="text2">
+        <cfargument  name="gender">
+        <cfargument  name="dob">
+        <cfargument  name="img">
+        <cfargument  name="address">
+        <cfargument  name="street">
+        <cfargument  name="pin">
+        <cfargument  name="district">
+        <cfargument  name="state">
+        <cfargument  name="country">
+        <cfargument  name="mail">
+        <cfargument  name="phone">
+        <cfset local.path = expandPath("./assets")>
+        <cffile  action="upload" destination="#local.path#" nameConflict="makeUnique">
+        <cfset local.value=cffile.clientFile> 
+        <cfquery name="checkUser">
+            select mail from contact where phone=<cfqueryparam value="#arguments.phone#" cfsqltype="cf_sql_varchar">
         </cfquery>
-        <cfreturn pagesList>
+        <cfif checkUser.recordCount EQ 0>
+            <cfquery name="dataAdd" datasource="data_base1">
+                insert into contact(title,text1,text2,gender,dob,img,address,street,pin,district,state,country,mail,phone,createdBy,updatedBy) 
+                values(<cfqueryparam value="#arguments.title#" cfsqltype="cf_sql_varchar">,
+                <cfqueryparam value="#arguments.text1#" cfsqltype="cf_sql_varchar">,
+                <cfqueryparam value="#arguments.text2#" cfsqltype="cf_sql_varchar">,
+                <cfqueryparam value="#arguments.gender#" cfsqltype="cf_sql_varchar">,
+                <cfqueryparam value="#arguments.dob#" cfsqltype="cf_sql_varchar">,
+                <cfqueryparam value="#local.value#" cfsqltype="cf_sql_varchar">,
+                <cfqueryparam value="#arguments.address#" cfsqltype="cf_sql_varchar">,
+                <cfqueryparam value="#arguments.street#" cfsqltype="cf_sql_varchar">,
+                <cfqueryparam value="#arguments.pin#" cfsqltype="cf_sql_varchar">,
+                <cfqueryparam value="#arguments.district#" cfsqltype="cf_sql_varchar">,
+                <cfqueryparam value="#arguments.state#" cfsqltype="cf_sql_varchar">,
+                <cfqueryparam value="#arguments.country#" cfsqltype="cf_sql_varchar">,
+                <cfqueryparam value="#arguments.mail#" cfsqltype="cf_sql_varchar">,
+                <cfqueryparam value="#arguments.phone#" cfsqltype="cf_sql_varchar">,
+                <cfqueryparam value="#session.userName#" cfsqltype="cf_sql_varchar">,
+                <cfqueryparam value="#session.userName#" cfsqltype="cf_sql_varchar">)
+            </cfquery>
+            <cflocation  url="home.cfm">
+            <cfreturn query>
+        <cfelse>
+            <cfreturn "page should be unique">
+        </cfif>
     </cffunction>
+
+    <cffunction  name="viewContact" access="public" returnType="query">
+        <cfquery name="viewdata" datasource="data_base1">
+            select userId,title,text1,text2,gender,dob,img,address,street,pin,district,state,country,mail,phone from contact where 
+            createdBy=<cfqueryparam value="#session.userName#" cfsqltype="cf_sql_varchar">
+        </cfquery>
+        <cfreturn viewdata>
+    </cffunction>
+
+    <cffunction  name="viewOne" access="remote" returnType="query" returnFormat="json">
+        <cfargument  name="userId">
+        <cfquery name="viewOnedata" datasource="data_base1">
+            select title,text1,text2,gender,dob,img,address,street,pin,district,state,country,mail,phone from contact where 
+           userId=<cfqueryparam value="#arguments.userId#" cfsqltype="cf_sql_varchar">
+        </cfquery>
+        <cfreturn viewonedata>
+    </cffunction>
+
+    <cffunction  name="editContact" access="public" returnType="query">
+        <cfargument  name="title">
+        <cfargument  name="text1">
+        <cfargument  name="text2">
+        <cfargument  name="gender">
+        <cfargument  name="dob">
+        <cfargument  name="img">
+        <cfargument  name="address">
+        <cfargument  name="street">
+        <cfargument  name="pin">
+        <cfargument  name="district">
+        <cfargument  name="state">
+        <cfargument  name="country">
+        <cfargument  name="mail">
+        <cfargument  name="phone">
+        <cfargument  name="id"> 
+        <cfset local.path = expandPath("./assets")>
+        <cffile  action="upload" destination="#local.path#" nameConflict="makeUnique">
+        <cfset local.value=cffile.clientFile> 
+        <cfquery name="pageList" datasource="data_base1">
+            update contact set title = <cfqueryparam value="#arguments.title#" cfsqltype="cf_sql_varchar">,
+            text1 = <cfqueryparam value="#arguments.text1#" cfsqltype="cf_sql_varchar">,
+            text2 = <cfqueryparam value="#arguments.text2#" cfsqltype="cf_sql_varchar">,
+            gender = <cfqueryparam value="#arguments.gender#" cfsqltype="cf_sql_varchar">,
+            dob = <cfqueryparam value="#arguments.dob#" cfsqltype="cf_sql_varchar">,
+            img = <cfqueryparam value="#local.value#" cfsqltype="cf_sql_varchar">,
+            address = <cfqueryparam value="#arguments.address#" cfsqltype="cf_sql_varchar">,
+            street = <cfqueryparam value="#arguments.street#" cfsqltype="cf_sql_varchar">,
+            pin = <cfqueryparam value="#arguments.pin#" cfsqltype="cf_sql_varchar">,
+            district = <cfqueryparam value="#arguments.district#" cfsqltype="cf_sql_varchar">,
+            state = <cfqueryparam value="#arguments.state#" cfsqltype="cf_sql_varchar">,
+            country = <cfqueryparam value="#arguments.country#" cfsqltype="cf_sql_varchar">,
+            mail = <cfqueryparam value="#arguments.mail#" cfsqltype="cf_sql_varchar">,
+            phone = <cfqueryparam value="#arguments.phone#" cfsqltype="cf_sql_varchar">,
+            updatedBy = <cfqueryparam value="#session.userName#" cfsqltype="cf_sql_varchar">
+            where userId = <cfqueryparam value="#arguments.id#" cfsqltype="cf_sql_int">
+        </cfquery>
+        <cflocation  url="home.cfm">
+        <cfreturn query>
+    </cffunction>
+
+    <cffunction  name="delContact" access="remote" returnType="query">
+        <cfargument name="userId">
+        <cfquery name="delete" datasource="data_base1">
+            delete from contact where userId = <cfqueryparam value="#arguments.userId#" cfsqltype="cf_sql_varchar">
+        </cfquery>
+        <cfreturn delete>
+    </cffunction>
+    
+    <cffunction  name="logout" access="remote" return="void">
+        <cfset structClear(session)>
+        <cfreturn true>
+    </cffunction>
+    
 </cfcomponent>
