@@ -28,9 +28,9 @@
                             </div>
                             <div class="input">
                                <div class="text-secondary mt-2 ms-4"> Password </div>
-                                <input type="password" name="password" class="inputs">
+                                <input type="password" name="userPassword1" class="inputs">
                             </div>
-                            <input type="submit" name="submit" value="LogIn" class="btn mt-5">
+                            <input type="submit" name="submit" value="LogIn" class="btn mt-5" onClick="return validation()">
                             <div class="text text-secondary mt-3">Or SignIn using</div>
                             <div class="images d-flex mt-1">
                                 <img src="assets/fb.JPG" alt="img" class="img ">
@@ -42,8 +42,13 @@
                 </div>
             </div>
             <cfif structKeyExists(form,"submit")>
-                <cfset local.loginObj=createObject("component","component.logic.cfc")>
-                <cfset local.result=local.loginObj.validation(form.userName,form.password)>
+                <cfset local.loginObj=createObject("component","components.logic")>
+                <cfset local.result=local.loginObj.validateLogin(form.userName,form.userPassword1)>
+                <cfif  local.result == "true">
+                    <cflocation  url="home.cfm">
+                <cfelse>
+                    <cfreturn "invalid login attempt">
+                </cfif>
             </cfif>
             </cfoutput>
     </body>
