@@ -51,8 +51,11 @@ body{
 }
 .text{
     font-size:13px;
-    font-color:rgb(73, 69, 69);
+    color:rgb(73, 69, 69);
     margin-left:70px;
+}
+.icons{
+    color: #fff;;
 }
 .icon{
     height:35px;
@@ -161,12 +164,17 @@ body{
 }
 .textCreate{
     color:#337ab7;
-    margin-left:8vw;
+    margin-left:9vw;
     font-size:15px;
 }
 .textCreate1{
     color:#337ab7;
-    margin-left:3vw;
+    margin-left:4vw;
+    font-size:15px;
+}
+.textCreate2{
+    color:#337ab7;
+    margin-left:9vw;
     font-size:15px;
 }
 .horizontalLine{
@@ -197,9 +205,15 @@ body{
 .dataText{
     color:#337ab7;
     font-size:15px;
-    margin-left:3vw;
+    margin-left:4vw;
     margin-top:1vw;
-    width:100px;
+    width:90px;
+}
+.dataText1{
+    color:#337ab7;
+    font-size:15px;
+    margin-top:1vw;
+    width:130px;
 }
 .btn5{
     height:2vw;
@@ -244,7 +258,13 @@ body{
     margin-top:2vw;
     font-weight:bold;
 }
-
+.data{
+    margin-top:27px;
+    font-size:11px;
+    color:#337ab7;
+    font-weight:bold;
+    margin-left:1vw;
+}
 .editBtn{
     width:5vw;
     border-left:transparent;
