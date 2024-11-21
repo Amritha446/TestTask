@@ -5,6 +5,7 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" ></script>
         <link href="css/style.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"  />
+        <script src="validate1.js"></script>
     </head>
     <body>
         <cfoutput>
@@ -12,8 +13,16 @@
                 <div class="header d-flex">
                     <img src="assets/icon.JPG" alt="img" class="icon">
                     <div class="headerText">ADDRESS BOOK</div>
-                    <img src="assets/signup.JPG" class="signUp" alt="img">
-                    <img src="assets/login.JPG" class="logIn" alt="img">
+                    <div class="signUp d-flex">
+                        <a href="signUp.cfm" class="link d-flex">
+                            <i class="fa-solid fa-user mb-1 mt-1" style="color:##fff"></i><div class="text-white ms-2">SignUp</div>
+                        </a>
+                    </div>
+                    <div class="logIn d-flex">
+                        <a href="login.cfm" class="link d-flex">
+                            <i class="fa-solid fa-right-to-bracket mb-1 mt-1 ms-3" style="color:##fff"></i><div class="text-white ms-2">LogIn</div>
+                        </a>
+                    </div>
                 </div>
                 <div class="main d-flex">
                     <div class="leftSection mb-5">
@@ -21,16 +30,18 @@
                     </div>
                     <div class="rightSection mb-5">
                         <h5 class=" heading fs-3 mt-2">LOGIN</h5>
-                        <form method="post" class="ms-5">
+                        <form method="post" class="ms-5" name="form">
                             <div class="input d-flex-column">
                                <div class="text-secondary mt-2 ms-4"> Username</div>
                                 <input type="text" name="userName" class="inputs">
+                                <div class="error text-danger" id="usersError"></div>
                             </div>
                             <div class="input">
                                <div class="text-secondary mt-2 ms-4"> Password </div>
                                 <input type="password" name="userPassword1" class="inputs">
+                                <div class="error text-danger" id="passError"></div>
                             </div>
-                            <input type="submit" name="submit" value="LogIn" class="btn mt-5" onClick="return validation()">
+                            <button type="submit" name="submit" class="btn mt-5" onClick="return validate1()">LogIn</button>
                             <div class="text text-secondary mt-3">Or SignIn using</div>
                             <div class="images d-flex mt-1">
                                 <img src="assets/fb.JPG" alt="img" class="img ">

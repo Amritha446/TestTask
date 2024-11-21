@@ -68,6 +68,11 @@
         </cfif>
     </cffunction>
 
+    <cffunction  name="setSessionId" access="public" returnType="void">
+        <cfargument  name="userId">
+        <cfset session.contactId = arguments.userId>
+    </cffunction>
+
     <cffunction  name="createContact" access="public" returnType="any">
         <cfargument  name="title">
         <cfargument  name="text1">
@@ -87,7 +92,7 @@
         <cffile  action="upload" destination="#local.path#" nameConflict="makeUnique">
         <cfset local.value=cffile.clientFile> 
         <cfquery name="checkUser">
-            select mail from contact where phone=<cfqueryparam value="#arguments.phone#" cfsqltype="cf_sql_varchar">
+            select mail,phone from contact where phone=<cfqueryparam value="#arguments.phone#" cfsqltype="cf_sql_varchar">
         </cfquery>
         <cfif checkUser.recordCount EQ 0>
             <cfquery name="dataAdd" datasource="data_base1">
@@ -127,7 +132,7 @@
     <cffunction  name="viewOne" access="remote" returnType="query" returnFormat="json">
         <cfargument  name="userId">
         <cfquery name="viewOnedata" datasource="data_base1">
-            select title,text1,text2,gender,dob,img,address,street,pin,district,state,country,mail,phone from contact where 
+            select title,text1,text2,gender,dob,address,street,pin,district,state,country,mail,phone,img from contact where 
            userId=<cfqueryparam value="#arguments.userId#" cfsqltype="cf_sql_varchar">
         </cfquery>
         <cfreturn viewonedata>
@@ -148,7 +153,7 @@
         <cfargument  name="country">
         <cfargument  name="mail">
         <cfargument  name="phone">
-        <cfargument  name="id"> 
+        <cfargument  name="userId"> 
         <cfset local.path = expandPath("./assets")>
         <cffile  action="upload" destination="#local.path#" nameConflict="makeUnique">
         <cfset local.value=cffile.clientFile> 
@@ -168,7 +173,7 @@
             mail = <cfqueryparam value="#arguments.mail#" cfsqltype="cf_sql_varchar">,
             phone = <cfqueryparam value="#arguments.phone#" cfsqltype="cf_sql_varchar">,
             updatedBy = <cfqueryparam value="#session.userName#" cfsqltype="cf_sql_varchar">
-            where userId = <cfqueryparam value="#arguments.id#" cfsqltype="cf_sql_int">
+            where userId = <cfqueryparam value="#arguments.userId#" cfsqltype="cf_sql_varchar">
         </cfquery>
         <cflocation  url="home.cfm">
         <cfreturn query>
