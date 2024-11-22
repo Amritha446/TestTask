@@ -5,11 +5,11 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" ></script>
         <link href="css/style.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"  />
-        <script src="validate1.js"></script>
+        <script src="js/validate1.js"></script>
     </head>
     <body>
         <cfoutput>
-            <div class="container ">
+            <div class="container-fluid ">
                 <div class="header d-flex">
                     <img src="assets/icon.JPG" alt="img" class="icon">
                     <div class="headerText">ADDRESS BOOK</div>
@@ -58,9 +58,9 @@
                 <cfif  local.result == "true">
                     <cflocation  url="home.cfm">
                 <cfelse>
-                    <cfreturn "invalid login attempt">
+                    <div class="text-danger">Invalid Login attempt.</div>
                 </cfif>
             </cfif>
-            </cfoutput>
+        </cfoutput>
     </body>
 </html>

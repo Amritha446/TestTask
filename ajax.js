@@ -7,7 +7,6 @@ function logoutUser(){
                 if(result){
                     location.reload()
                     return true;
-                    
                 }
             }
         })
@@ -19,7 +18,10 @@ function logoutUser(){
 function createContact(){
     
     $('#editContact').modal('show')
-
+    $.ajax({
+        type:"POST",
+        url:"Components/logic.cfc?method=removeSessionId"
+    })
 }
 
 function readOne(event){
@@ -48,7 +50,6 @@ function readOne(event){
             let img = formattedResult.DATA[0][13];
             
             document.getElementById('name').textContent = title +text1 + " " + text2;
-            console.log(gender)
             document.getElementById('gender').textContent = gender;
             document.getElementById('dob').textContent = dob;
             document.getElementById('address').textContent = address + ","+street+ "," + district +","+state+ "," +country;
@@ -56,7 +57,7 @@ function readOne(event){
             document.getElementById('email').textContent = mail;
             document.getElementById('phone').textContent = phone;
             document.getElementById('img1').src = "assets/"+img;
-            console.log(img)
+            
         }
     })
 }
@@ -125,3 +126,22 @@ function deletePage(event){
     }
 }
 
+function excelCreate(){
+    $.ajax({
+        type:"POST",
+        url:"components/logic.cfc?method=createExcel",
+        success:function(result){ 
+            var formattedResult = JSON.parse(result);
+            var filePath = "./assets/spreadsheet/" + formattedResult;
+            console.log(filePath)
+            fileDownload(filePath,"contactDetails.xlsx")
+        }
+    })
+}
+function fileDownload(url,file){
+    var anch = document.createElement("a");
+    anch.download = file;
+    anch.href = url;
+    anch.click();
+    anch.remove();
+}
