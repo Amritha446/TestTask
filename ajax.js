@@ -16,7 +16,7 @@ function logoutUser(){
     }
 }
 function createContact(){
-    
+    document.getElementById('heading').textContent = "CREATE CONTACT";
     $('#editContact').modal('show')
     $.ajax({
         type:"POST",
@@ -32,7 +32,7 @@ function readOne(event){
         data:{userId:event.target.value},
         success:function(result){
             
-            let formattedResult=JSON.parse(result);
+            let formattedResult = JSON.parse(result);
             console.log(formattedResult)
             let title = formattedResult.DATA[0][0];
             let text1 = formattedResult.DATA[0][1];
@@ -63,6 +63,7 @@ function readOne(event){
 }
 
 function editOne(event){
+    document.getElementById('heading').textContent = "EDIT CONTACT";
     $.ajax({
         type:"POST",
         url:"Components/logic.cfc?method=viewOne",
@@ -145,3 +146,4 @@ function fileDownload(url,file){
     anch.click();
     anch.remove();
 }
+
