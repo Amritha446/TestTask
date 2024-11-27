@@ -6,9 +6,17 @@
         <link href="css/style.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"  />
         <script src="js/validate1.js"></script>
+        <script src="js/google.js"></script>
     </head>
     <body>
         <cfoutput>
+            <cfif structKeyExists(session,"googleAccnt")>
+                <cfset session.isAuthenticated = true>
+                <cfset session.userId = "#session.googleAccnt.id#">
+                <cfset session.userName="#session.googleAccnt.other.email#">
+                <cfset session.profile="#session.googleAccnt.other.picture#">
+                <cflocation  url="home.cfm">
+            </cfif>
             <div class="container-fluid ">
                 <div class="header d-flex">
                     <img src="assets/icon.JPG" alt="img" class="icon">
@@ -44,8 +52,8 @@
                             <button type="submit" name="submit" class="btn mt-5" onClick="return validate1()">LogIn</button>
                             <div class="text text-secondary mt-3">Or SignIn using</div>
                             <div class="images d-flex mt-1">
-                                <img src="assets/fb.JPG" alt="img" class="img ">
-                                <img src="assets/google.JPG" alt="img" class="img1">
+                                <button type="button"><img src="assets/fb.JPG" alt="img" class="img "></button>
+                                <button type="button" onClick = "googleData()"><img src="assets/google.JPG" alt="img" class="img1 pe-none"></button>
                             </div>
                             <div class="lastSec mt-3 ms-1 ">Dont't have an Account? <a href="signUp.cfm" class="link">SignUp Here!</a></div>
                         </form>
