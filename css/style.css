@@ -196,11 +196,13 @@ body{
 }
 .userImg{
     margin-left:3vw;
+    border-radius: 50px;
 }
 .dataImg{
     height:4vw;
     width:4vw;
     margin-left:1vw;
+    border-radius: 50px;
 }
 .dataText{
     color:#337ab7;
