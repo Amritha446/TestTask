@@ -147,11 +147,3 @@ function fileDownload(url,file){
     anch.remove();
 }
 
-function scheduler(){
-    $.ajax({
-        type:"POST",
-        url:"components/schedule.cfc?method=scheduleDate"
-        
-    })
-}
-

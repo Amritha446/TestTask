@@ -28,9 +28,14 @@
                 </div>
                 <div class="d-flex secondSection">
                     <div class="leftSide mb-2 d-flex-column">
-                        <img src="assets/#session.profile#" class="userImg mt-3 ">
-                        <div class="userText ms-5 mt-2">#session.userName#</div>
+                        <cfif structKeyExists(session,"googleAccnt")>
+                            <img src="#session.profile#" class="userImg mt-3 ">
+                        <cfelse>
+                            <img src="assets/#session.profile#" class="userImg mt-3 ">
+                        </cfif>
+                        <div class="userText ms-5 mt-2">#session.fullName#</div>
                         <button type="button" class="btn4 ms-3 mt-2" id="createb" onClick="createContact()">CREATE</button>
+                        <button type = "button" id = "schlr" onClick = "scheduler()">schedule</button>
                     </div>
                     <div class="rightSide ms-5 mb-1 d-flex-column">
                         <div class="headCreate d-flex mt-3">
