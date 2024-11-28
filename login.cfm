@@ -15,6 +15,7 @@
                 <cfset session.userId = "#session.googleAccnt.id#">
                 <cfset session.userName="#session.googleAccnt.other.email#">
                 <cfset session.profile="#session.googleAccnt.other.picture#">
+                <cfset session.fullName="#session.googleAccnt.name#">
                 <cflocation  url="home.cfm">
             </cfif>
             <div class="container-fluid ">
@@ -52,8 +53,8 @@
                             <button type="submit" name="submit" class="btn mt-5" onClick="return validate1()">LogIn</button>
                             <div class="text text-secondary mt-3">Or SignIn using</div>
                             <div class="images d-flex mt-1">
-                                <button type="button"><img src="assets/fb.JPG" alt="img" class="img "></button>
-                                <button type="button" onClick = "googleData()"><img src="assets/google.JPG" alt="img" class="img1 pe-none"></button>
+                                <button type="button" class = "btnNew"><img src="assets/fb.JPG" alt="img" class="img "></button>
+                                <button type="button" onClick = "googleData()" class = "btnNew"><img src="assets/google.JPG" alt="img" class="img1 pe-none"></button>
                             </div>
                             <div class="lastSec mt-3 ms-1 ">Dont't have an Account? <a href="signUp.cfm" class="link">SignUp Here!</a></div>
                         </form>

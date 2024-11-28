@@ -11,7 +11,7 @@
         <cfif qCheck.password EQ "#local.encrypted_pass#">
             <cfquery name="getUser" datasource="data_base1">
                 SELECT 
-                CustomerID,userName,password,profile 
+                CustomerID,userName,password,profile,fullName 
                 FROM customer1 
                 WHERE 
                 userName=<cfqueryparam value="#arguments.userName#" cfsqltype="cf_sql_varchar">
@@ -23,6 +23,8 @@
                 <cfset session.userPassword= "#getUser.password#">
                 <cfset session.userName="#getUser.userName#">
                 <cfset session.profile="#getUser.profile#">
+                <cfset session.fullName="#getUser.fullName#">
+                <cfset session.userMail="#getUser.mail#">
                 <cfreturn true>
             </cfif>
         <cfelse>

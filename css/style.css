@@ -339,3 +339,7 @@ body{
     font-size:11px;
     margin-left:10vw;
 }
+button.btnNew{
+    border: none;
+    background: white;
+}
