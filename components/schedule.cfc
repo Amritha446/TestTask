@@ -3,12 +3,11 @@
         <cfschedule action = "update" 
         task = "TaskName" 
         operation = "HTTPRequest" 
-        url = "http://addressbook/checkSite.cfm" 
-        startDate = "Now()" 
-        startTime = "12:00 AM" 
+        url = "http://addressbook.com/checkSite.cfm?userName=#session.userName#&userMail=#session.userMail#" 
+        startDate = "#Now()#" 
+        startTime = "12:00 AM"
         interval = "daily" 
-        resolveURL = "Yes" 
-        publish = "Yes"  
+        mode = "application"  
         >
     </cffunction>
 </cfcomponent>

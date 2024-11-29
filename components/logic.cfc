@@ -11,7 +11,7 @@
         <cfif qCheck.password EQ "#local.encrypted_pass#">
             <cfquery name="getUser" datasource="data_base1">
                 SELECT 
-                CustomerID,userName,password,profile,fullName 
+                CustomerID,userName,password,profile,fullName,mail
                 FROM customer1 
                 WHERE 
                 userName=<cfqueryparam value="#arguments.userName#" cfsqltype="cf_sql_varchar">

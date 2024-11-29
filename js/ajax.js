@@ -150,8 +150,7 @@ function fileDownload(url,file){
 function scheduler(){
     $.ajax({
         type:"POST",
-        url:"components/schedule.cfc?method=scheduleDate"
-        
+        url:"components/schedule.cfc?method=scheduleDate"  
     })
 }
 

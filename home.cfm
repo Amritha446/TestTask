@@ -29,14 +29,15 @@
                 <div class="d-flex secondSection">
                     <div class="leftSide mb-2 d-flex-column">
                         <cfif structKeyExists(session,"googleAccnt")>
-                            <img src="#session.profile#" class="userImg mt-3 ">
+                            <img src="#session.profile#" class="userImg mt-3 ms-5 ps-2">
                         <cfelse>
-                            <img src="assets/#session.profile#" class="userImg mt-3 ">
+                            <img src="assets/#session.profile#" class="userImg mt-3 ms-5 ps-2">
                         </cfif>
-                        <div class="userText ms-5 mt-2">#session.fullName#</div>
+                        <div class="userText ms-5 mt-2 ps-3">#session.fullName#</div>
                         <button type="button" class="btn4 ms-3 mt-2" id="createb" onClick="createContact()">CREATE</button>
-                        <button type = "button" id = "schlr" onClick = "scheduler()">schedule</button>
+                        <button type = "submit" id = "schlr" class="btn4 ms-3 mt-2" onClick = "scheduler()">Scheduler</button>
                     </div>
+
                     <div class="rightSide ms-5 mb-1 d-flex-column">
                         <div class="headCreate d-flex mt-3">
                             <p class="textCreate">Name</p>
@@ -44,20 +45,22 @@
                             <p class="textCreate2">Phone Number</p>
                         </div>
                         <hr class="horizontalLine">
-                        <cfset local.objCreate=createObject("component", "components.logic")>
-                        <cfset local.result1=local.objCreate.viewContact()>
-                        <cfloop query="#local.result1#">
+                        <!---<cfset local.objCreate=createObject("component", "components.logic")>
+                        <cfset local.result1=local.objCreate.viewContact()>--->
+                        <cfset ormReload()>
+                        <cfset local.result1 = entityLoad("orm",{createdBy="#session.userName#"})>
+                        <cfloop array = "#local.result1#" item = "ormRow">
                             <div class="d-flex">
-                                <img src="assets/#local.result1.img#" class="dataImg mt-1 mb-1">
-                                <div class="dataText">#local.result1.text1#</div>
-                                <div class="dataText1">#local.result1.mail#</div>
-                                <div class="dataText">#local.result1.phone#</div>
+                                <img src="assets/#ormRow.getimg()#" class="dataImg mt-1 mb-1">
+                                <div class="dataText">#ormRow.gettext1()# #ormRow.gettext2()#</div>
+                                <div class="dataText">#ormRow.getmail()#</div>
+                                <div class="dataText">#ormRow.getphone()#</div>
                                 <button type="submit" class="btn5 ms-4 mt-2" data-bs-toggle="modal" data-bs-target="##editContact" 
-                                id="editb" value="#local.result1.userId#" onClick="editOne(event)">Edit</button>
-                                <button type="submit" class="btn5 ms-4 mt-2" id="deleteb" value="#local.result1.userId#" 
+                                id="editb" value="#ormRow.getuserId()#" onClick="editOne(event)">Edit</button>
+                                <button type="submit" class="btn5 ms-4 mt-2" id="deleteb" value="#ormRow.getuserId()#" 
                                 onClick="deletePage(event)">DELETE</button>
                                <button type="submit" class="btn5 ms-4 mt-2" data-bs-toggle="modal" data-bs-target="##viewContact" 
-                                id="viewb" value="#local.result1.userId#" onClick="readOne(event)">VIEW</button>
+                                id="viewb" value="#ormRow.getuserId()#" onClick="readOne(event)">VIEW</button>
                             </div>
                             <hr class="horizontalLine">
                         </cfloop>
