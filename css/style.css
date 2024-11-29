@@ -150,7 +150,7 @@ body{
     width:3vw;
 }
 .leftSide{
-    height:14vw;
+    height:auto;
     width:12vw;
     background-color:white;
     margin-left:5vw;
@@ -207,7 +207,6 @@ body{
 .dataText{
     color:#337ab7;
     font-size:15px;
-    margin-left:4vw;
     margin-top:1vw;
     width:90px;
 }
