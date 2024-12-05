@@ -2,7 +2,7 @@ function logoutUser(){
     if(confirm("Confirm Logout?")){
         $.ajax({
             type:"POST",
-            url:"Components/logic.cfc?method=logout",
+            url:"Components/contactDetails.cfc?method=logout",
             success:function(result){
                 if(result){
                     location.reload()
@@ -20,15 +20,15 @@ function createContact(){
     $('#editContact').modal('show')
     $.ajax({
         type:"POST",
-        url:"Components/logic.cfc?method=removeSessionId"
+        url:"Components/contactDetails.cfc?method=removeSessionId"
     })
 }
 
-function readOne(event){
+function readOneContact(event){
     console.log(event.target.value)
     $.ajax({
         type:"POST",
-        url:"Components/logic.cfc?method=viewOne",
+        url:"Components/contactDetails.cfc?method=viewOne",
         data:{userId:event.target.value},
         success:function(result){
             
@@ -66,7 +66,7 @@ function editOne(event){
     document.getElementById('heading').textContent = "EDIT CONTACT";
     $.ajax({
         type:"POST",
-        url:"Components/logic.cfc?method=viewOne",
+        url:"Components/contactDetails.cfc?method=viewOne",
         data:{userId:event.target.value},
         success:function(result){
         
@@ -104,7 +104,7 @@ function editOne(event){
 
             $.ajax({
                 type:"POST",
-                url:"Components/logic.cfc?method=setSessionId",
+                url:"Components/contactDetails.cfc?method=setSessionId",
                 data:{userId:event.target.value}
             })
         }
@@ -115,7 +115,7 @@ function deletePage(event){
     if(confirm("Confirm delete?")){
         $.ajax({
             type:"POST",
-            url:"Components/logic.cfc?method=delContact",
+            url:"Components/contactDetails.cfc?method=delContact",
             data:{userId:event.target.value},
             success:function(result){
                 location.reload()
@@ -130,7 +130,7 @@ function deletePage(event){
 function excelCreate(){
     $.ajax({
         type:"POST",
-        url:"components/logic.cfc?method=createExcel",
+        url:"components/contactDetails.cfc?method=createExcel",
         success:function(result){ 
             var formattedResult = JSON.parse(result);
             var filePath = "./assets/spreadsheet/" + formattedResult;

@@ -3,7 +3,7 @@
         <cfschedule action = "update" 
         task = "TaskName" 
         operation = "HTTPRequest" 
-        url = "http://addressbook.com/checkSite.cfm?userName=#session.userName#&userMail=#session.userMail#" 
+        url = "http://addressbook.com/checkSite.cfm?userId=#session.userId#&userMail=#session.userMail#" 
         startDate = "#Now()#" 
         startTime = "12:00 AM"
         interval = "daily" 

@@ -2,5 +2,10 @@
 scope="email"   result="session.googleAccnt" secretKey = "">
 
 <cfif structKeyExists(session,"googleAccnt")>
-    <cflocation  url="login.cfm" addtoken = "no">
+    <cfset session.isAuthenticated = true>
+    <cfset session.userId = "#session.googleAccnt.id#">
+    <cfset session.userName="#session.googleAccnt.other.email#">
+    <cfset session.profile="#session.googleAccnt.other.picture#">
+    <cfset session.fullName="#session.googleAccnt.name#">
+    <cflocation  url="home.cfm">
 </cfif>
