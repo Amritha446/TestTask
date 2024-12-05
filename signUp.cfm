@@ -70,8 +70,8 @@
                 </div>
             </div>
             <cfif structKeyExists(form,"submit")>
-                <cfset local.loginObj=createObject("component","components.logic")>
-                <cfset local.result=local.loginObj.signIn(form.fullName,form.mail,form.userName,form.userPassword1,form.userPassword2,form.profile)>
+                <cfset local.loginObj=createObject("component","components.contactDetails")>
+                <cfset local.result=local.loginObj.signUp(form.fullName,form.mail,form.userName,form.userPassword1,form.userPassword2,form.profile)>
                 <cfif local.result == "true">
                     <cflocation url="login.cfm" addToken="no">
                 <cfelse>

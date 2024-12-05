@@ -10,14 +10,6 @@
     </head>
     <body>
         <cfoutput>
-            <cfif structKeyExists(session,"googleAccnt")>
-                <cfset session.isAuthenticated = true>
-                <cfset session.userId = "#session.googleAccnt.id#">
-                <cfset session.userName="#session.googleAccnt.other.email#">
-                <cfset session.profile="#session.googleAccnt.other.picture#">
-                <cfset session.fullName="#session.googleAccnt.name#">
-                <cflocation  url="home.cfm">
-            </cfif>
             <div class="container-fluid ">
                 <div class="header d-flex">
                     <img src="assets/icon.JPG" alt="img" class="icon">
@@ -62,7 +54,7 @@
                 </div>
             </div>
             <cfif structKeyExists(form,"submit")>
-                <cfset local.loginObj=createObject("component","components.logic")>
+                <cfset local.loginObj=createObject("component","components.contactDetails")>
                 <cfset local.result=local.loginObj.validateLogin(form.userName,form.userPassword1)>
                 <cfif  local.result == "true">
                     <cflocation  url="home.cfm">

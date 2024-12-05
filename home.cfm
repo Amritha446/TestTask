@@ -22,7 +22,9 @@
                     </button>
                 </div>
                 <div class="topSection mt-4 d-flex mb-4">
-                    <form method="post"><button type="submit" class="btn2 mb-1" name = "createPDF"><img src="assets/pdf.JPG" class="hImg" alt="img"></button></form>
+                    <form method="post">
+                        <button type="submit" class="btn2 mb-1" name = "createPDF"><img src="assets/pdf.JPG" class="hImg" alt="img"></button>
+                    </form>
                     <button type="button" class="btn3" onClick="excelCreate()"><img src="assets/xml.JPG" class="hImg" alt="img"></button>
                     <button type="button" class="btn3" onClick="window.print();return false;"><img src="assets/draft.JPG" class="hImg" alt="img"></button>
                 </div>
@@ -31,7 +33,7 @@
                         <cfif structKeyExists(session,"googleAccnt")>
                             <img src="#session.profile#" class="userImg mt-3 ms-5 ps-2">
                         <cfelse>
-                            <img src="assets/#session.profile#" class="userImg mt-3 ms-5 ps-2">
+                            <img src="assets/#session.profile#" class="userImg mt-3 ms-3 ps-2">
                         </cfif>
                         <div class="userText ms-5 mt-2 ps-3">#session.fullName#</div>
                         <button type="button" class="btn4 ms-3 mt-2" id="createb" onClick="createContact()">CREATE</button>
@@ -45,22 +47,22 @@
                             <p class="textCreate2">Phone Number</p>
                         </div>
                         <hr class="horizontalLine">
-                        <!---<cfset local.objCreate=createObject("component", "components.logic")>
+                        <!---<cfset local.objCreate=createObject("component", "components.contactDetails")>
                         <cfset local.result1=local.objCreate.viewContact()>--->
                         <cfset ormReload()>
-                        <cfset local.result1 = entityLoad("orm",{createdBy="#session.userName#"})>
+                        <cfset local.result1 = entityLoad("orm",{createdBy="#session.userId#"})>
                         <cfloop array = "#local.result1#" item = "ormRow">
                             <div class="d-flex">
                                 <img src="assets/#ormRow.getimg()#" class="dataImg mt-1 mb-1">
-                                <div class="dataText">#ormRow.gettext1()# #ormRow.gettext2()#</div>
-                                <div class="dataText">#ormRow.getmail()#</div>
-                                <div class="dataText">#ormRow.getphone()#</div>
+                                <div class="dataText ms-3">#ormRow.gettext1()# #ormRow.gettext2()#</div>
+                                <div class="dataText ms-3 me-5">#ormRow.getmail()#</div>
+                                <div class="dataText ms-5">#ormRow.getphone()#</div>
                                 <button type="submit" class="btn5 ms-4 mt-2" data-bs-toggle="modal" data-bs-target="##editContact" 
                                 id="editb" value="#ormRow.getuserId()#" onClick="editOne(event)">Edit</button>
                                 <button type="submit" class="btn5 ms-4 mt-2" id="deleteb" value="#ormRow.getuserId()#" 
                                 onClick="deletePage(event)">DELETE</button>
                                <button type="submit" class="btn5 ms-4 mt-2" data-bs-toggle="modal" data-bs-target="##viewContact" 
-                                id="viewb" value="#ormRow.getuserId()#" onClick="readOne(event)">VIEW</button>
+                                id="viewb" value="#ormRow.getuserId()#" onClick="readOneContact(event)">VIEW</button>
                             </div>
                             <hr class="horizontalLine">
                         </cfloop>
@@ -176,6 +178,7 @@
                                                 </div>
                                                 <div id="errorcontact"></div>
                                                 <button type="submit" value="submit" class="btn mt-3 mb-5 ms-5" name="submit" onClick="return validation()">SUBMIT</button>
+                                                <button type="button" class="btn btn-secondary ms-5" data-bs-dismiss="modal">Close</button>
                                             </form>
                                         </div>
                                         <div class="newUser"><img src="assets/newUser.JPG" alt="img" class="newUser" id="img2"></div>
@@ -185,12 +188,12 @@
                         </div>
                         
                         <cfif structKeyExists(form,"submit") AND NOT structKeyExists(session,"contactId")>
-                            <cfset local.editObj=createObject("component","components.logic")>
+                            <cfset local.editObj=createObject("component","components.contactDetails")>
                             <cfset local.resultEdit=local.editObj.createContact(form.title,form.text1,form.text2,form.gender,form.dob,form.img,form.address,form.street,form.pin,form.district,form.state,form.country,form.mail,form.phone)>
                             #local.resultEdit#
                         </cfif>
                         <cfif structKeyExists(form,"submit") AND structKeyExists(session,"contactId")>
-                            <cfset local.editObj=createObject("component","components.logic")>
+                            <cfset local.editObj=createObject("component","components.contactDetails")>
                             <cfset local.resultEdit=local.editObj.editContact(form.title,form.text1,form.text2,form.gender,form.dob,form.img,form.address,form.street,form.pin,form.district,form.state,form.country,form.mail,form.phone,session.contactId)>
                             #local.resultEdit#
                         </cfif>
@@ -235,8 +238,8 @@
                                                 <button type="submit" name="closeBtn" class="closeBtn" >CLOSE</button>
                                             </form>
                                             <cfif structKeyExists(form, "submit")>
-                                                <cfset local.viewObj = createObject("component","components.logic")>
-                                                <cfset local.result2 = local.viewObj.viewOne()>
+                                                <cfset local.viewObj = createObject("component","components.contactDetails")>
+                                                <cfset local.result2 = local.viewObj.getOneContact()>
                                             </cfif>
                                         </div>
                                         <div class="newUser"><img src="assets/newUser.JPG" alt="img" class="newUser" id="img1"></div>
@@ -248,7 +251,7 @@
                 </div>
             </div>
             <cfif structKeyExists(form, "createPDF")>
-                <cfset local.objPdf = createObject("component", "components.logic")>
+                <cfset local.objPdf = createObject("component", "components.contactDetails")>
                 <cfset local.result = local.objPdf.viewContact()> 
                 <cfdocument  format="PDF" overwrite="yes" filename = "./assets/createdPdf.pdf" >
                     <table border = "1">
