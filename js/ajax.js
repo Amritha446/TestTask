@@ -15,8 +15,11 @@ function logoutUser(){
         event.preventDefault()
     }
 }
+
 function createContact(){
     document.getElementById('heading').textContent = "CREATE CONTACT";
+    document.getElementById('createData').reset();
+    $('.error').text("");
     $('#editContact').modal('show')
     $.ajax({
         type:"POST",
@@ -24,11 +27,11 @@ function createContact(){
     })
 }
 
-function readOneContact(event){
+/*function readOneContact(event){
     console.log(event.target.value)
     $.ajax({
         type:"POST",
-        url:"Components/contactDetails.cfc?method=viewOne",
+        url:"Components/contactDetails.cfc?method=getOneContact",
         data:{userId:event.target.value},
         success:function(result){
             
@@ -60,13 +63,16 @@ function readOneContact(event){
             
         }
     })
-}
+}*/
 
 function editOne(event){
     document.getElementById('heading').textContent = "EDIT CONTACT";
+    document.getElementById('createData').reset();
+    document.getElementById('img2').value = "";
+    $('.error').text("");
     $.ajax({
         type:"POST",
-        url:"Components/contactDetails.cfc?method=viewOne",
+        url:"Components/contactDetails.cfc?method=getOneContact",
         data:{userId:event.target.value},
         success:function(result){
         
@@ -87,6 +93,7 @@ function editOne(event){
             let phone = formattedResult.DATA[0][12];
             let img = formattedResult.DATA[0][13];
             
+            if(event.target.id == 'editb'){
             document.getElementById('title').value = title;
             document.getElementById('text1').value = text1;
             document.getElementById('text2').value = text2;
@@ -101,6 +108,17 @@ function editOne(event){
             document.getElementById('mail').value = mail;
             document.getElementById('phone1').value = phone;
             document.getElementById('img2').src = "assets/"+img;
+            }else{
+                console.log('hi')
+            document.getElementById('name').textContent = title +text1 + " " + text2;
+            document.getElementById('gender').textContent = gender;
+            document.getElementById('dob').textContent = dob;
+            document.getElementById('address').textContent = address + ","+street+ "," + district +","+state+ "," +country;
+            document.getElementById('pincode').textContent = pin;
+            document.getElementById('email').textContent = mail;
+            document.getElementById('phone').textContent = phone;
+            document.getElementById('img1').src = "assets/"+img;
+            }
 
             $.ajax({
                 type:"POST",
@@ -139,6 +157,7 @@ function excelCreate(){
         }
     })
 }
+
 function fileDownload(url,file){
     var anch = document.createElement("a");
     anch.download = file;

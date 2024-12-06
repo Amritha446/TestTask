@@ -70,9 +70,9 @@
                 </div>
             </div>
             <cfif structKeyExists(form,"submit")>
-                <cfset local.loginObj=createObject("component","components.contactDetails")>
-                <cfset local.result=local.loginObj.signUp(form.fullName,form.mail,form.userName,form.userPassword1,form.userPassword2,form.profile)>
-                <cfif local.result == "true">
+                <cfset loginObj=createObject("component","components.contactDetails")>
+                <cfset result=loginObj.signUp(form.fullName,form.mail,form.userName,form.userPassword1,form.userPassword2,form.profile)>
+                <cfif result == "true">
                     <cflocation url="login.cfm" addToken="no">
                 <cfelse>
                     <div class="text-danger">Try with another Username, Username should not contain any spaces.</div>

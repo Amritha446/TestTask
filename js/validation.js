@@ -14,6 +14,8 @@ function validation(){
     let mail = document.forms["form"]["mail"].value;
     let phone = document.forms["form"]["phone"].value;
     let valid = true;
+    //let currentDate = new Date();
+    //let formattedDate = currentDate.toISOString.split('T')[0];
 
     if(title == ''){
         document.getElementById('titleError').textContent = 'Please select one option';
@@ -48,6 +50,7 @@ function validation(){
         valid = false;
     }
     else{
+       // document.getElementById('dob1').setAttribute('max',formattedDate);
         document.getElementById('dobError').textContent = '';
     }
     if(img == ''){
