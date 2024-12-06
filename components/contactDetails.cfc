@@ -3,31 +3,24 @@
         <cfargument  name="userName">
         <cfargument  name="userPassword1">
         <cfset local.encrypted_pass = Hash(#arguments.userPassword1#, 'SHA-512')/>
-        <cfquery name="qCheck" datasource="data_base1"><!---make it one query--->
-            SELECT password
+        <cfquery name="qCheck"><!---make it one query--->
+            SELECT CustomerID,
+                userName,
+                password,
+                profile,
+                fullName,
+                mail
             FROM users
             WHERE userName = <cfqueryparam value="#arguments.userName#" cfsqltype="cf_sql_varchar">
+            AND password=<cfqueryparam value="#local.encrypted_pass#" cfsqltype="cf_sql_varchar">
         </cfquery>
         <cfif qCheck.password EQ "#local.encrypted_pass#">
-            <cfquery name="getUser" datasource="data_base1">
-                SELECT 
-                    CustomerID,
-                    userName,
-                    password,
-                    profile,
-                    fullName,
-                    mail
-                FROM users 
-                WHERE 
-                userName=<cfqueryparam value="#arguments.userName#" cfsqltype="cf_sql_varchar">
-                AND password=<cfqueryparam value="#local.encrypted_pass#" cfsqltype="cf_sql_varchar">
-            </cfquery>
-            <cfif getUser.recordCount >
+            <cfif qCheck.recordCount >
                 <cfset session.isAuthenticated = true>
-                <cfset session.userId = "#getUser.CustomerId#">
-                <cfset session.profile="#getUser.profile#">
-                <cfset session.fullName="#getUser.fullName#">
-                <cfset session.userMail="#getUser.mail#">
+                <cfset session.userId = qCheck.CustomerId>
+                <cfset session.profile = qCheck.profile>
+                <cfset session.fullName = qCheck.fullName>
+                <cfset session.userMail = qCheck.mail>
                 <cfreturn true>
             </cfif>
         <cfelse>
@@ -53,15 +46,14 @@
                 <cfreturn "Username should not contain any spaces.">
             </cfif>
         
-            <cfquery name="checkUser" datasource="data_base1">
-                SELECT 
-                    userName 
+            <cfquery name="checkUser">
+                SELECT userName 
                 FROM users 
                 WHERE userName=<cfqueryparam value="#arguments.userName#" cfsqltype="cf_sql_varchar">  
             </cfquery>
 
             <cfif checkUser.RecordCount EQ 0>
-                <cfquery name="insertDetails" datasource="data_base1">
+                <cfquery name="insertDetails">
                     INSERT INTO 
                     users(
                         fullName,
@@ -113,14 +105,13 @@
         <cffile  action="upload" destination="#local.path#" nameConflict="makeUnique">
         <cfset local.value=cffile.clientFile> 
         <cfquery name="checkUser">
-            SELECT 
-                mail,
+            SELECT mail,
                 phone 
             FROM contact 
             WHERE phone=<cfqueryparam value="#arguments.phone#" cfsqltype="cf_sql_varchar">
         </cfquery>
         <cfif checkUser.recordCount EQ 0>
-            <cfquery name="dataAdd" datasource="data_base1">
+            <cfquery name="dataAdd">
                 INSERT INTO 
                     contact(
                         title,
@@ -172,8 +163,8 @@
         </cfif>
     </cffunction>
 
-    <cffunction  name="viewContact" access="public" returnType="query">
-        <cfquery name="viewdata" datasource="data_base1">
+    <cffunction  name="viewContact" access="remote" returnType="query">
+        <cfquery name="viewdata">
             SELECT 
                 userId,
                 title,
@@ -194,11 +185,12 @@
             WHERE createdBy=<cfqueryparam value="#session.userId#" cfsqltype="cf_sql_varchar">
         </cfquery>
         <cfreturn viewdata>
+        
     </cffunction>
 
     <cffunction  name="getOneContact" access="remote" returnType="query" returnFormat="json">
         <cfargument  name="userId">
-        <cfquery name="getOneContactdata" datasource="data_base1">
+        <cfquery name="getOneContactdata">
             SELECT 
                 title,
                 text1,
@@ -241,7 +233,7 @@
         <cffile  action="upload" destination="#local.path#" nameConflict="makeUnique">
         <cfset local.value=cffile.clientFile> 
 
-        <cfquery name="pageList" datasource="data_base1">
+        <cfquery name="pageList">
             UPDATE contact 
             SET 
                 title = <cfqueryparam value="#arguments.title#" cfsqltype="cf_sql_varchar">,
@@ -270,7 +262,7 @@
     <cffunction  name="delContact" access="remote" returnType="void">
         <cfargument name="userId">
 
-        <cfquery name="delete" datasource="data_base1">
+        <cfquery name="delete">
             DELETE 
             FROM contact 
             WHERE userId = <cfqueryparam value="#arguments.userId#" cfsqltype="cf_sql_varchar">
@@ -285,26 +277,8 @@
 
     <cffunction  name="createExcel" access="remote" returnType="string" returnFormat="json">
         <cfset local.filename = createUUID()>
-        <cfquery name="excelReturn">
-            SELECT 
-                title,
-                text1,
-                text2,
-                gender,
-                dob,
-                address,
-                street,
-                pin,
-                district,
-                state,
-                country,
-                mail,
-                phone,
-                img 
-            FROM contact
-            WHERE createdBy=<cfqueryparam value="#session.userId#" cfsqltype="cf_sql_varchar"> 
-        </cfquery>
-        <cfspreadsheet  action="write" filename="../assets/spreadsheet/#local.filename#.xlsx" query="excelReturn">
+        <cfset local.result = viewContact()>
+        <cfspreadsheet  action="write" filename="../assets/spreadsheet/#local.filename#.xlsx" query="local.result">
         <cfreturn "#local.filename#.xlsx">
     </cffunction>
     
