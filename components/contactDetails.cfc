@@ -3,7 +3,7 @@
         <cfargument  name="userName">
         <cfargument  name="userPassword1">
         <cfset local.encrypted_pass = Hash(#arguments.userPassword1#, 'SHA-512')/>
-        <cfquery name="qCheck"><!---make it one query--->
+        <cfquery name="local.qCheck"><!---maked it one query--->
             SELECT CustomerID,
                 userName,
                 password,
@@ -14,13 +14,13 @@
             WHERE userName = <cfqueryparam value="#arguments.userName#" cfsqltype="cf_sql_varchar">
             AND password=<cfqueryparam value="#local.encrypted_pass#" cfsqltype="cf_sql_varchar">
         </cfquery>
-        <cfif qCheck.password EQ "#local.encrypted_pass#">
-            <cfif qCheck.recordCount >
+        <cfif local.qCheck.password EQ "#local.encrypted_pass#">
+            <cfif local.qCheck.recordCount >
                 <cfset session.isAuthenticated = true>
-                <cfset session.userId = qCheck.CustomerId>
-                <cfset session.profile = qCheck.profile>
-                <cfset session.fullName = qCheck.fullName>
-                <cfset session.userMail = qCheck.mail>
+                <cfset session.userId = local.qCheck.CustomerId>
+                <cfset session.profile = local.qCheck.profile>
+                <cfset session.fullName = local.qCheck.fullName>
+                <cfset session.userMail = local.qCheck.mail>
                 <cfreturn true>
             </cfif>
         <cfelse>
@@ -46,14 +46,14 @@
                 <cfreturn "Username should not contain any spaces.">
             </cfif>
         
-            <cfquery name="checkUser">
+            <cfquery name="local.checkUser">
                 SELECT userName 
                 FROM users 
                 WHERE userName=<cfqueryparam value="#arguments.userName#" cfsqltype="cf_sql_varchar">  
             </cfquery>
 
-            <cfif checkUser.RecordCount EQ 0>
-                <cfquery name="insertDetails">
+            <cfif local.checkUser.RecordCount EQ 0>
+                <cfquery name="local.insertDetails">
                     INSERT INTO 
                     users(
                         fullName,
@@ -104,14 +104,14 @@
         <cfset local.path = expandPath("./assets")>
         <cffile  action="upload" destination="#local.path#" nameConflict="makeUnique">
         <cfset local.value=cffile.clientFile> 
-        <cfquery name="checkUser">
+        <cfquery name="local.checkUser">
             SELECT mail,
                 phone 
             FROM contact 
             WHERE phone=<cfqueryparam value="#arguments.phone#" cfsqltype="cf_sql_varchar">
         </cfquery>
-        <cfif checkUser.recordCount EQ 0>
-            <cfquery name="dataAdd">
+        <cfif local.checkUser.recordCount EQ 0>
+            <cfquery name="local.dataAdd">
                 INSERT INTO 
                     contact(
                         title,
@@ -164,7 +164,7 @@
     </cffunction>
 
     <cffunction  name="viewContact" access="remote" returnType="query">
-        <cfquery name="viewdata">
+        <cfquery name="local.viewdata">
             SELECT 
                 userId,
                 title,
@@ -184,13 +184,13 @@
             FROM contact 
             WHERE createdBy=<cfqueryparam value="#session.userId#" cfsqltype="cf_sql_varchar">
         </cfquery>
-        <cfreturn viewdata>
+        <cfreturn local.viewdata>
         
     </cffunction>
 
     <cffunction  name="getOneContact" access="remote" returnType="query" returnFormat="json">
         <cfargument  name="userId">
-        <cfquery name="getOneContactdata">
+        <cfquery name="local.getOneContactdata">
             SELECT 
                 title,
                 text1,
@@ -209,7 +209,7 @@
             FROM contact
             WHERE userId=<cfqueryparam value="#arguments.userId#" cfsqltype="cf_sql_varchar">
         </cfquery>
-        <cfreturn getOneContactdata>
+        <cfreturn local.getOneContactdata>
     </cffunction>
 
     <cffunction  name="editContact" access="public" returnType="query">
@@ -233,7 +233,7 @@
         <cffile  action="upload" destination="#local.path#" nameConflict="makeUnique">
         <cfset local.value=cffile.clientFile> 
 
-        <cfquery name="pageList">
+        <cfquery name="local.pageList">
             UPDATE contact 
             SET 
                 title = <cfqueryparam value="#arguments.title#" cfsqltype="cf_sql_varchar">,
@@ -261,8 +261,7 @@
 
     <cffunction  name="delContact" access="remote" returnType="void">
         <cfargument name="userId">
-
-        <cfquery name="delete">
+        <cfquery name="local.delete">
             DELETE 
             FROM contact 
             WHERE userId = <cfqueryparam value="#arguments.userId#" cfsqltype="cf_sql_varchar">
