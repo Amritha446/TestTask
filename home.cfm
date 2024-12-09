@@ -7,7 +7,7 @@
         <link href="css/style.css" rel="stylesheet">
         <script src="js/jquery.min.js"></script>
         <script src="js/ajax.js"></script>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css"/>       
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css"/>  
     </head>
     <body>
         <cfoutput>
@@ -114,7 +114,7 @@
                                                     </div>
                                                     <div class="d-flex-column">
                                                         <div class="textHead">DOB</div>
-                                                        <input type="date" name="dob" class="editBtn2 ms-3" id="dob1">   
+                                                        <input type="date" name="dob" class="editBtn2 ms-3" id="dob1" max="#dateformat(now(),"yyyy-mm-dd")#" max-length="8">   
                                                         <div class="error text-danger" id="dobError"></div>
                                                     </div>
                                                 </div>
@@ -178,6 +178,15 @@
                                                         <div class="error text-danger" id="phoneError"></div>
                                                     </div>
                                                 </div>
+                                                <div class="d-flex-column">
+                                                        <div class="textHead ">ROLE</div>
+                                                        <select id="multiSel" data-live-search="true" multiple class="ms-3" multiple aria-label="Default select example">
+                                                            <option value="0">admin</option>
+                                                            <option value="1">editor</option>
+                                                            <option value="2">user</option>
+                                                            <option value="3">client</option>
+                                                        </select>
+                                                    </div>
                                                 <div id="errorcontact"></div>
                                                 <button type="submit" value="submit" class="btn mt-3 mb-5 ms-5" name="submit" onClick="return validation()">SUBMIT</button>
                                                 <button type="button" class="btn btn-secondary ms-5" data-bs-dismiss="modal">Close</button>
@@ -191,8 +200,8 @@
                         
                         <cfif structKeyExists(form,"submit") AND NOT structKeyExists(session,"contactId")>
                             <cfset editObj=createObject("component","components.contactDetails")>
-                            <cfset resultEdit=editObj.createContact(form.title,form.text1,form.text2,form.gender,form.dob,form.img,form.address,form.street,form.pin,form.district,form.state,form.country,form.mail,form.phone)>
-                            #resultEdit#
+                            <cfset resultContact=editObj.createContact(form.title,form.text1,form.text2,form.gender,form.dob,form.img,form.address,form.street,form.pin,form.district,form.state,form.country,form.mail,form.phone)>
+                            #resultContact#
                         </cfif>
                         <cfif structKeyExists(form,"submit") AND structKeyExists(session,"contactId")>
                             <cfset editObj=createObject("component","components.contactDetails")>
