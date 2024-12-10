@@ -1,4 +1,5 @@
 function validation(){
+    // alert(document.getElementById('multiSel').value);
     let title = document.forms["form"]["title"].value;
     let firstname = document.forms["form"]["text1"].value;
     let lastname = document.forms["form"]["text2"].value;

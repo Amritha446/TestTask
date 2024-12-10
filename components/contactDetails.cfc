@@ -83,7 +83,7 @@
 
     <cffunction  name="setSessionId" access="remote" returnType="void">
         <cfargument  name="userId">
-        <cfset session.contactId = arguments.userId>
+        <cfset  = arguments.userId>
     </cffunction>
 
     <cffunction  name="createContact" access="public" returnType="any">
@@ -101,6 +101,7 @@
         <cfargument  name="country">
         <cfargument  name="mail">
         <cfargument  name="phone">
+        <cfargument  name="multiSel">
         <cfset local.path = expandPath("./assets")>
         <cffile  action="upload" destination="#local.path#" nameConflict="makeUnique">
         <cfset local.value=cffile.clientFile> 
@@ -128,8 +129,7 @@
                         country,
                         mail,
                         phone,
-                        createdBy,
-                        updatedBy
+                        createdBy 
                     ) 
                 VALUES(
                     <cfqueryparam value="#arguments.title#" cfsqltype="cf_sql_varchar">,
@@ -146,10 +146,29 @@
                     <cfqueryparam value="#arguments.country#" cfsqltype="cf_sql_varchar">,
                     <cfqueryparam value="#arguments.mail#" cfsqltype="cf_sql_varchar">,
                     <cfqueryparam value="#arguments.phone#" cfsqltype="cf_sql_varchar">,
-                    <cfqueryparam value="#session.userId#" cfsqltype="cf_sql_varchar">,
                     <cfqueryparam value="#session.userId#" cfsqltype="cf_sql_varchar">
                 )
             </cfquery>
+            <cfquery name="local.idSelect">
+                select 
+                userId 
+                from 
+                contact 
+                where 
+                mail = <cfqueryparam value="#arguments.mail#" cfsqltype="cf_sql_varchar">;
+            </cfquery>
+           <cfloop list="#arguments.multiSel#" item="item"> 
+                <cfquery name = "local.selectedOptionInsertion">
+                INSERT INTO 
+                contact_role(
+                    contact_id,
+                    role_id
+                ) 
+                values
+                (<cfqueryparam value="#local.idSelect.userId#" cfsqltype="cf_sql_varchar">, 
+                <cfqueryparam value="#item#" cfsqltype="cf_sql_varchar">)
+                </cfquery>
+            </cfloop> 
             <cflocation  url="home.cfm">
             <cfreturn query>
         <cfelse>
@@ -188,28 +207,39 @@
         
     </cffunction>
 
-    <cffunction  name="getOneContact" access="remote" returnType="query" returnFormat="json">
+    <cffunction  name="getOneContact" access="remote" returnType="struct" returnFormat="json">
         <cfargument  name="userId">
         <cfquery name="local.getOneContactdata">
             SELECT 
-                title,
-                text1,
-                text2,
-                gender,
-                dob,
-                address,
-                street,
-                pin,
-                district,
-                state,
-                country,
-                mail,
-                phone,
-                img 
-            FROM contact
-            WHERE userId=<cfqueryparam value="#arguments.userId#" cfsqltype="cf_sql_varchar">
+                contact.title,
+                contact.text1,
+                contact.text2,
+                contact.gender,
+                contact.dob,
+                contact.address,
+                contact.street,
+                contact.pin,
+                contact.district,
+                contact.state,
+                contact.country,
+                contact.mail,
+                contact.phone,
+                contact.img,
+                contact_role.role_id
+            FROM 
+            contact JOIN
+            contact_role
+            ON 
+            contact.userId = contact_role.contact_id
+            WHERE userId = <cfqueryparam value="#arguments.userId#" cfsqltype="cf_sql_varchar">
         </cfquery>
-        <cfreturn local.getOneContactdata>
+
+        <cfloop array="#local.getOneContactdata.contact_role.role_id#" item="item">
+            <cfset selectedId = ArrayNew(1)>
+            <cfset ArrayAppend(selectedId, {"#item#"})>
+        </cfloop>
+
+        <cfreturn local.combinedData>
     </cffunction>
 
     <cffunction  name="editContact" access="public" returnType="query">
@@ -281,4 +311,17 @@
         <cfreturn "#local.filename#.xlsx">
     </cffunction>
     
+    <cffunction name="multiSelection" access="public" returnType="query">
+        <cfquery name = "local.getMultiSelectedData">
+            select 
+            role_id,
+            role_name
+            from
+            role_select
+            order By
+            role_name;
+        </cfquery>
+        <cfreturn local.getMultiSelectedData>
+    </cffunction>
+
 </cfcomponent>
