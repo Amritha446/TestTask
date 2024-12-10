@@ -114,7 +114,8 @@
                                                     </div>
                                                     <div class="d-flex-column">
                                                         <div class="textHead">DOB</div>
-                                                        <input type="date" name="dob" class="editBtn2 ms-3" id="dob1" max="#dateformat(now(),"yyyy-mm-dd")#" max-length="8">   
+                                                        <input type="date" name="dob" class="editBtn2 ms-3" id="dob1" 
+                                                        max="#dateformat(now(),"yyyy-mm-dd")#" max-length="8">   
                                                         <div class="error text-danger" id="dobError"></div>
                                                     </div>
                                                 </div>
@@ -178,20 +179,24 @@
                                                         <div class="error text-danger" id="phoneError"></div>
                                                     </div>
                                                 </div>
-                                                <div class="d-flex-column">
-                                                        <div class="textHead ">ROLE</div>
-                                                        <select id="multiSel" data-live-search="true" multiple class="ms-3" multiple aria-label="Default select example">
-                                                            <option value="0">admin</option>
-                                                            <option value="1">editor</option>
-                                                            <option value="2">user</option>
-                                                            <option value="3">client</option>
-                                                        </select>
-                                                    </div>
+
+                                                <div class="d-flex-column" id = "multiSelect">
+                                                    <cfset result = createObject("component","components.contactDetails")>
+                                                    <cfset multiSelect = result.multiSelection()>
+                                                    <div class="textHead ">ROLE</div>
+                                                    <select id="multiSel" name="multiSel" data-live-search = "true" multiple = "true" class="ms-3" multiple aria-label = "Default select example">
+                                                        <cfloop query = #multiSelect#>
+                                                            <option value = "#multiSelect.role_id#" id = "multiSelected">#multiSelect.role_name#</option>
+                                                        </cfloop>
+                                                    </select>
+                                                   
+                                                </div>
+
                                                 <div id="errorcontact"></div>
                                                 <button type="submit" value="submit" class="btn mt-3 mb-5 ms-5" name="submit" onClick="return validation()">SUBMIT</button>
                                                 <button type="button" class="btn btn-secondary ms-5" data-bs-dismiss="modal">Close</button>
                                             </form>
-                                        </div>
+                                        </div>  
                                         <div class="newUser"><img src="assets/newUser.JPG" alt="img" class="newUser" id="img2"></div>
                                     </div>                                        
                                 </div>
@@ -200,12 +205,40 @@
                         
                         <cfif structKeyExists(form,"submit") AND NOT structKeyExists(session,"contactId")>
                             <cfset editObj=createObject("component","components.contactDetails")>
-                            <cfset resultContact=editObj.createContact(form.title,form.text1,form.text2,form.gender,form.dob,form.img,form.address,form.street,form.pin,form.district,form.state,form.country,form.mail,form.phone)>
+                            <cfset resultContact=editObj.createContact({title = form.title,
+                            text1 = form.text1,
+                            text2 = form.text2,
+                            gender = form.gender,
+                            dob = form.dob,
+                            img = form.img,
+                            address = form.address,
+                            street = form.street,
+                            pin = form.pin,
+                            district = form.district,
+                            state = form.state,
+                            country = form.country,
+                            mail = form.mail,
+                            phone = form.phone,
+                            multiSel = form.multiSel})>
                             #resultContact#
                         </cfif>
                         <cfif structKeyExists(form,"submit") AND structKeyExists(session,"contactId")>
                             <cfset editObj=createObject("component","components.contactDetails")>
-                            <cfset resultEdit=editObj.editContact(form.title,form.text1,form.text2,form.gender,form.dob,form.img,form.address,form.street,form.pin,form.district,form.state,form.country,form.mail,form.phone,session.contactId)>
+                            <cfset resultEdit=editObj.editContact({title = form.title,
+                            text1 = form.text1,
+                            text2 = form.text2,
+                            gender = form.gender,
+                            dob = form.dob,
+                            img = form.img,
+                            address = form.address,
+                            street = form.street,
+                            pin = form.pin,
+                            district = form.district,
+                            state = form.state,
+                            country = form.country,
+                            mail = form.mail,
+                            phone = form.phone,
+                            contactId = session.contactId})>
                             #resultEdit#
                         </cfif>
                         
@@ -245,6 +278,10 @@
                                                 <div class="d-flex">
                                                     <div class="textHead">PHONE  :</div>
                                                     <div class = "data" id="phone"></div>
+                                                </div>
+                                                <div class="d-flex">
+                                                    <div class="textHead">ROLES  :</div>
+                                                    <div class = "data" id="role"></div>
                                                 </div>
                                                 <button type="submit" name="closeBtn" class="closeBtn" >CLOSE</button>
                                             </form>

@@ -5,7 +5,6 @@ function logoutUser(){
             url:"Components/contactDetails.cfc?method=logout",
             success:function(result){
                 if(result){
-                    location.reload()
                     return true;
                 }
             }
@@ -30,7 +29,7 @@ function createContact(){
 function editOne(event){
     document.getElementById('heading').textContent = "EDIT CONTACT";
     document.getElementById('createData').reset();
-    document.getElementById('img2').value = "";
+    //document.getElementById('img2').value = "";
     $('.error').text("");
     $.ajax({
         type:"POST",
@@ -54,6 +53,7 @@ function editOne(event){
             let mail = formattedResult.DATA[0][11];
             let phone = formattedResult.DATA[0][12];
             let img = formattedResult.DATA[0][13];
+            let role = formattedResult.DATA[0][14];
             
             if(event.target.id == 'editb'){
             document.getElementById('title').value = title;
@@ -79,6 +79,7 @@ function editOne(event){
             document.getElementById('email').textContent = mail;
             document.getElementById('phone').textContent = phone;
             document.getElementById('img1').src = "assets/"+img;
+            document.getElementById('role').textContent = role;
             }
 
             $.ajax({
@@ -97,7 +98,7 @@ function deletePage(event){
             url:"Components/contactDetails.cfc?method=delContact",
             data:{userId:event.target.value},
             success:function(result){
-                location.reload()
+
             }
         })
     }
@@ -131,6 +132,14 @@ function scheduler(){
     $.ajax({
         type:"POST",
         url:"components/schedule.cfc?method=scheduleDate"  
+    })
+}
+
+function multiSelect(){
+    $.ajax({
+        type:"POST",
+        url:"Components/contactDetails.cfc?method=multiSelection"
+        
     })
 }
 

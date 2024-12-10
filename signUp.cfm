@@ -71,7 +71,12 @@
             </div>
             <cfif structKeyExists(form,"submit")>
                 <cfset loginObj=createObject("component","components.contactDetails")>
-                <cfset result=loginObj.signUp(form.fullName,form.mail,form.userName,form.userPassword1,form.userPassword2,form.profile)>
+                <cfset result=loginObj.signUp({fullName = form.fullName,
+                mail = form.mail,
+                userName = form.userName,
+                userPassword1 = form.userPassword1,
+                userPassword2 = form.userPassword2,
+                profile = form.profile})>
                 <cfif result == "true">
                     <cflocation url="login.cfm" addToken="no">
                 <cfelse>
