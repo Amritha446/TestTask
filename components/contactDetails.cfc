@@ -3,7 +3,7 @@
         <cfargument  name="userName">
         <cfargument  name="userPassword1">
         <cfset local.encrypted_pass = Hash(#arguments.userPassword1#, 'SHA-512')/>
-        <cfquery name="local.qCheck"><!---maked it one query--->
+        <cfquery name="local.qCheck">
             SELECT CustomerID,
                 userName,
                 password,
@@ -12,7 +12,7 @@
                 mail
             FROM users
             WHERE userName = <cfqueryparam value="#arguments.userName#" cfsqltype="cf_sql_varchar">
-            AND password=<cfqueryparam value="#local.encrypted_pass#" cfsqltype="cf_sql_varchar">
+            AND password = <cfqueryparam value="#local.encrypted_pass#" cfsqltype="cf_sql_varchar">
         </cfquery>
         <cfif local.qCheck.password EQ "#local.encrypted_pass#">
             <cfif local.qCheck.recordCount >
@@ -81,10 +81,10 @@
         </cfif>
     </cffunction>
 
-    <cffunction  name="setSessionId" access="remote" returnType="void">
+    <!--- <cffunction  name="setSessionId" access="remote" returnType="void">
         <cfargument  name="userId">
-        <cfset  = arguments.userId>
-    </cffunction>
+        <cfset session.contactId = arguments.userId>
+    </cffunction> --->
 
     <cffunction  name="createContact" access="public" returnType="any">
         <cfargument  name="title">
@@ -207,8 +207,26 @@
         
     </cffunction>
 
-    <cffunction  name="getOneContact" access="remote" returnType="struct" returnFormat="json">
-        <cfargument  name="userId">
+    <cffunction name="getRolesById" access="remote" returnType="query" returnFormat="json">
+        <cfargument name = "contactId">
+        <cfquery name = "local.getContactRoles">
+            select 
+            role_select.role_id,
+            role_select.role_name,
+            contact_role.contact_id
+            from
+            role_select 
+                JOIN contact_role
+            ON 
+            role_select.role_id = contact_role.role_id
+            WHERE contact_id = <cfqueryparam value="#arguments.contactId#" cfsqltype="cf_sql_varchar">;
+        </cfquery>
+        <cfreturn local.getContactRoles>
+
+    </cffunction>
+
+    <cffunction  name="getOneContact" access="remote" returnType="query" returnFormat="json">
+        <cfargument  name="contactId">
         <cfquery name="local.getOneContactdata">
             SELECT 
                 contact.title,
@@ -231,15 +249,14 @@
             contact_role
             ON 
             contact.userId = contact_role.contact_id
-            WHERE userId = <cfqueryparam value="#arguments.userId#" cfsqltype="cf_sql_varchar">
+            WHERE userId = <cfqueryparam value="#arguments.contactId#" cfsqltype="cf_sql_varchar">
         </cfquery>
-
-        <cfloop array="#local.getOneContactdata.contact_role.role_id#" item="item">
-            <cfset selectedId = ArrayNew(1)>
-            <cfset ArrayAppend(selectedId, {"#item#"})>
-        </cfloop>
-
-        <cfreturn local.combinedData>
+        <!--- <cfset selectedId = ArrayNew(1)>
+        <cfloop query="#local.getOneContactdata#" item="item"> 
+            <cfset ArrayAppend(selectedId, {item})>
+            <cfdump  var="selectedId">
+        </cfloop>  --->
+        <cfreturn local.getOneContactdata>
     </cffunction>
 
     <cffunction  name="editContact" access="public" returnType="query">
@@ -257,7 +274,8 @@
         <cfargument  name="country">
         <cfargument  name="mail">
         <cfargument  name="phone">
-        <cfargument  name="userId"> 
+        <cfargument  name="multiSel"> 
+        <cfargument  name="contactId">
 
         <cfset local.path = expandPath("./assets")>
         <cffile  action="upload" destination="#local.path#" nameConflict="makeUnique">
@@ -280,23 +298,48 @@
                 country = <cfqueryparam value="#arguments.country#" cfsqltype="cf_sql_varchar">,
                 mail = <cfqueryparam value="#arguments.mail#" cfsqltype="cf_sql_varchar">,
                 phone = <cfqueryparam value="#arguments.phone#" cfsqltype="cf_sql_varchar">,
-                updatedBy = <cfqueryparam value="#session.userId#" cfsqltype="cf_sql_varchar">
-            WHERE userId = <cfqueryparam value="#arguments.userId#" cfsqltype="cf_sql_varchar">
+                updatedBy = <cfqueryparam value="#session.contactId#" cfsqltype="cf_sql_varchar">
+            WHERE userId = <cfqueryparam value="#arguments.contactId#" cfsqltype="cf_sql_varchar">
         </cfquery>
-
+        <cfquery name = "deleteRoles">
+            delete 
+            from 
+            contact_role 
+            where 
+            contact_id = <cfqueryparam value="#arguments.contactId#" cfsqltype="cf_sql_varchar">;
+        </cfquery>
+        <cfloop list="#arguments.multiSel#" item="item"> 
+                <cfquery name = "local.selectedOptionInsertion">
+                    INSERT INTO 
+                    contact_role(
+                        contact_id,
+                        role_id
+                    ) 
+                    values
+                    (<cfqueryparam value = "#arguments.contactId#" cfsqltype="cf_sql_varchar">, 
+                    <cfqueryparam value = "#item#" cfsqltype="cf_sql_varchar">)
+                </cfquery>
+            </cfloop> 
         <cflocation  url="home.cfm">
 
         <cfreturn query>
     </cffunction>
 
     <cffunction  name="delContact" access="remote" returnType="void">
-        <cfargument name="userId">
+        <cfargument name = "contactId">
+        <cfquery name = "deleteRoles">
+            delete 
+            from 
+            contact_role 
+            where 
+            contact_id = <cfqueryparam value="#arguments.contactId#" cfsqltype="cf_sql_varchar">;
+        </cfquery>
         <cfquery name="local.delete">
             DELETE 
             FROM contact 
-            WHERE userId = <cfqueryparam value="#arguments.userId#" cfsqltype="cf_sql_varchar">
+            WHERE userId = <cfqueryparam value="#arguments.contactId#" cfsqltype="cf_sql_varchar">
         </cfquery>
-
+        
     </cffunction>
     
     <cffunction  name="logout" access="remote" return="void">
@@ -307,6 +350,16 @@
     <cffunction  name="createExcel" access="remote" returnType="string" returnFormat="json">
         <cfset local.filename = createUUID()>
         <cfset local.result = viewContact()>
+        <cfset roleArray = arrayNew(1)>
+        <cfloop query = "result">
+            <cfset role_query = getRolesById(local.result.userId)>
+            <cfset roleString = "">
+            <cfloop query="role_query">
+                <cfset roleString = roleString & " " & role_query.role_name>
+            </cfloop>
+            <cfset arrayAppend(roleArray, roleString)>
+        </cfloop>
+        <cfset queryAddColumn(local.result, "roles", roleArray)>
         <cfspreadsheet  action="write" filename="../assets/spreadsheet/#local.filename#.xlsx" query="local.result">
         <cfreturn "#local.filename#.xlsx">
     </cffunction>

@@ -68,12 +68,14 @@
                             </div>
                             <hr class="horizontalLine">
                         </cfloop>
+                        
                         <div class="modal fade" id="editContact" tabindex="-1">
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-body d-flex">
                                         <div class="mainSection ms-3">
                                             <form method="post" name="form" enctype="multipart/form-data" id="createData">
+                                                <input type="hidden" value="" name = "contactId" id = "contactId">
                                                 <div class="headEdit mt-1 ">
                                                     <div class="headEditText" id="heading"></div>
                                                 </div>
@@ -203,9 +205,9 @@
                             </div>
                         </div>
                         
-                        <cfif structKeyExists(form,"submit") AND NOT structKeyExists(session,"contactId")>
+                        <cfif structKeyExists(form,"submit") AND form.contactId == "">
                             <cfset editObj=createObject("component","components.contactDetails")>
-                            <cfset resultContact=editObj.createContact({title = form.title,
+                            <cfset resultContact=editObj.createContact(title = form.title,
                             text1 = form.text1,
                             text2 = form.text2,
                             gender = form.gender,
@@ -219,12 +221,12 @@
                             country = form.country,
                             mail = form.mail,
                             phone = form.phone,
-                            multiSel = form.multiSel})>
+                            multiSel = form.multiSel)>
                             #resultContact#
                         </cfif>
-                        <cfif structKeyExists(form,"submit") AND structKeyExists(session,"contactId")>
+                        <cfif structKeyExists(form,"submit") AND form.contactId != "">
                             <cfset editObj=createObject("component","components.contactDetails")>
-                            <cfset resultEdit=editObj.editContact({title = form.title,
+                            <cfset resultEdit=editObj.editContact(title = form.title,
                             text1 = form.text1,
                             text2 = form.text2,
                             gender = form.gender,
@@ -238,10 +240,11 @@
                             country = form.country,
                             mail = form.mail,
                             phone = form.phone,
-                            contactId = session.contactId})>
+                            userId = form.contactId,
+                            contactId = form.contactId,
+                            multiSel = form.multiSel)>
                             #resultEdit#
                         </cfif>
-                        
                         <div class="modal fade" id="viewContact" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
                             <div class="modal-dialog">
                                 <div class="modal-content">
@@ -281,7 +284,7 @@
                                                 </div>
                                                 <div class="d-flex">
                                                     <div class="textHead">ROLES  :</div>
-                                                    <div class = "data" id="role"></div>
+                                                    <div class = "data" id="roles"></div>
                                                 </div>
                                                 <button type="submit" name="closeBtn" class="closeBtn" >CLOSE</button>
                                             </form>
@@ -300,7 +303,17 @@
             </div>
             <cfif structKeyExists(form, "createPDF")>
                 <cfset objPdf = createObject("component", "components.contactDetails")>
-                <cfset result = objPdf.viewContact()> 
+                <cfset result = objPdf.viewContact()>
+                <cfset roleArray = arrayNew(1)>
+                <cfloop query = "result">
+                    <cfset role_query = objPdf.getRolesById(result.userId)>
+                    <cfset roleString = "">
+                    <cfloop query="role_query">
+                        <cfset roleString = roleString & " " & role_query.role_name>
+                    </cfloop>
+                    <cfset arrayAppend(roleArray, roleString)>
+                </cfloop>
+                <cfset queryAddColumn(result, "roles", roleArray)>
                 <cfdocument  format="PDF" overwrite="yes" filename = "./assets/createdPdf.pdf" >
                     <table border = "1">
                         <thead>
@@ -319,6 +332,7 @@
                                 <th>COUNTRY</th>
                                 <th>EMAIL</th>
                                 <th>PHONE</th>
+                                <th>ROLE</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -337,7 +351,8 @@
                                     <td>#result.state#</td>
                                     <td>#result.country#</td>
                                     <td>#result.mail#</td>
-                                    <td>#result.phone#</td>                                   
+                                    <td>#result.phone#</td> 
+                                    <td>#result.roles#</td>
                                 </tr>
                             </cfloop>
                         </tbody>

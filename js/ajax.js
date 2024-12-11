@@ -27,18 +27,19 @@ function createContact(){
 }
 
 function editOne(event){
+
     document.getElementById('heading').textContent = "EDIT CONTACT";
     document.getElementById('createData').reset();
     //document.getElementById('img2').value = "";
     $('.error').text("");
     $.ajax({
+        
         type:"POST",
         url:"Components/contactDetails.cfc?method=getOneContact",
-        data:{userId:event.target.value},
+        data:{contactId:event.target.value},
         success:function(result){
         
             let formattedResult=JSON.parse(result);
-            console.log(formattedResult)
             let title = formattedResult.DATA[0][0];
             let text1 = formattedResult.DATA[0][1];
             let text2 = formattedResult.DATA[0][2];
@@ -53,7 +54,6 @@ function editOne(event){
             let mail = formattedResult.DATA[0][11];
             let phone = formattedResult.DATA[0][12];
             let img = formattedResult.DATA[0][13];
-            let role = formattedResult.DATA[0][14];
             
             if(event.target.id == 'editb'){
             document.getElementById('title').value = title;
@@ -70,23 +70,46 @@ function editOne(event){
             document.getElementById('mail').value = mail;
             document.getElementById('phone1').value = phone;
             document.getElementById('img2').src = "assets/"+img;
+            document.getElementById('contactId').value = event.target.value; 
             }else{
             document.getElementById('name').textContent = title +text1 + " " + text2;
             document.getElementById('gender').textContent = gender;
             document.getElementById('dob').textContent = dob;
-            document.getElementById('address').textContent = address + ","+street+ "," + district +","+state+ "," +country;
+            document.getElementById('address').textContent = address + ","+street+ "," + district + "," +state+ "," +country;
             document.getElementById('pincode').textContent = pin;
             document.getElementById('email').textContent = mail;
             document.getElementById('phone').textContent = phone;
             document.getElementById('img1').src = "assets/"+img;
-            document.getElementById('role').textContent = role;
             }
 
-            $.ajax({
+           /*  $.ajax({
                 type:"POST",
                 url:"Components/contactDetails.cfc?method=setSessionId",
                 data:{userId:event.target.value}
+            }) */
+            $.ajax({
+                type:"POST",
+                url:"Components/contactDetails.cfc?method=getRolesById",
+                data:{contactId:event.target.value},
+                success:function(result){
+                    let formattedResult=JSON.parse(result);
+                    if(event.target.id == 'editb'){
+                        let roleIds = [];
+                        formattedResult.DATA.forEach(element => {
+                            roleIds.push(element[0])
+                        });
+                        $('#multiSel').val(roleIds)
+                    }else{
+                        let roleNames = [];
+                        formattedResult.DATA.forEach(element => {
+                            roleNames.push(element[1])
+                            console.log(roleNames)
+                        });
+                        $('#roles').text(roleNames)
+                    }
+                }
             })
+
         }
     })
 }
@@ -96,9 +119,9 @@ function deletePage(event){
         $.ajax({
             type:"POST",
             url:"Components/contactDetails.cfc?method=delContact",
-            data:{userId:event.target.value},
+            data:{contactId:event.target.value},
             success:function(result){
-
+                event.target.parentNode.remove()
             }
         })
     }
