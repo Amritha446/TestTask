@@ -35,7 +35,7 @@ function editOne(event){
     $.ajax({
         
         type:"POST",
-        url:"Components/contactDetails.cfc?method=getOneContact",
+        url:"Components/contactDetails.cfc?method=getOneContactById", /* getOneContact */ 
         data:{contactId:event.target.value},
         success:function(result){
         
@@ -89,7 +89,7 @@ function editOne(event){
             }) */
             $.ajax({
                 type:"POST",
-                url:"Components/contactDetails.cfc?method=getRolesById",
+                url:"Components/contactDetails.cfc?method=getOneContactById",/* getRolesById */
                 data:{contactId:event.target.value},
                 success:function(result){
                     let formattedResult=JSON.parse(result);

@@ -33,11 +33,11 @@
                 <div class="d-flex secondSection">
                     <div class="leftSide mb-2 d-flex-column">
                         <cfif structKeyExists(session,"googleAccnt")>
-                            <img src="#session.profile#" class="userImg mt-3 ms-5 ps-2">
+                            <img src="#session.profile#" class="userImg mt-3 ms-4 ps-2">
                         <cfelse>
                             <img src="assets/#session.profile#" class="userImg mt-3 ms-3 ps-2">
                         </cfif>
-                        <div class="userText ms-5 mt-2 ps-3">#session.fullName#</div>
+                        <div class="userText ms-5 mt-2 ps-0">#session.fullName#</div>
                         <button type="button" class="btn4 ms-3 mt-2" id="createb" onClick="createContact()">CREATE</button>
                         <button type = "submit" id = "schlr" class="btn4 ms-3 mt-2" onClick = "scheduler()">Scheduler</button>
                     </div>
@@ -65,8 +65,9 @@
                                 onClick="deletePage(event)">DELETE</button>
                                 <button type="submit" class="btn5 ms-4 mt-2" data-bs-toggle="modal" data-bs-target="##viewContact" 
                                 id="viewb" value="#ormRow.getuserId()#" onClick="editOne(event)">VIEW</button>
+                                <hr class="horizontalLine">
                             </div>
-                            <hr class="horizontalLine">
+                            
                         </cfloop>
                         
                         <div class="modal fade" id="editContact" tabindex="-1">
@@ -191,7 +192,7 @@
                                                             <option value = "#multiSelect.role_id#" id = "multiSelected">#multiSelect.role_name#</option>
                                                         </cfloop>
                                                     </select>
-                                                   
+                                                    <div class="error text-danger" id="multiError"></div>
                                                 </div>
 
                                                 <div id="errorcontact"></div>
@@ -290,7 +291,7 @@
                                             </form>
                                             <cfif structKeyExists(form, "submit")>
                                                 <cfset viewObj = createObject("component","components.contactDetails")>
-                                                <cfset result2 = viewObj.getOneContact()>
+                                                <cfset result2 = viewObj.getOneContactById()><!--- getOneContact --->
                                             </cfif>
                                         </div>
                                         <div class="newUser"><img src="assets/newUser.JPG" alt="img" class="newUser" id="img1"></div>
@@ -306,7 +307,7 @@
                 <cfset result = objPdf.viewContact()>
                 <cfset roleArray = arrayNew(1)>
                 <cfloop query = "result">
-                    <cfset role_query = objPdf.getRolesById(result.userId)>
+                    <cfset role_query = objPdf.getOneContactById(result.userId)><!--- getRolesById --->
                     <cfset roleString = "">
                     <cfloop query="role_query">
                         <cfset roleString = roleString & " " & role_query.role_name>
