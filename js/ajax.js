@@ -38,7 +38,7 @@ function editOne(event){
         url:"Components/contactDetails.cfc?method=getOneContactById", /* getOneContact */ 
         data:{contactId:event.target.value},
         success:function(result){
-        
+            console.log(result)
             let formattedResult=JSON.parse(result);
             let title = formattedResult.DATA[0][0];
             let text1 = formattedResult.DATA[0][1];
@@ -71,6 +71,9 @@ function editOne(event){
             document.getElementById('phone1').value = phone;
             document.getElementById('img2').src = "assets/"+img;
             document.getElementById('contactId').value = event.target.value; 
+            console.log(formattedResult.DATA[0][16])
+            let roleIds = formattedResult.DATA[0][16].split(",");
+            $('#multiSel').val(roleIds)
             }else{
             document.getElementById('name').textContent = title +text1 + " " + text2;
             document.getElementById('gender').textContent = gender;
@@ -80,16 +83,19 @@ function editOne(event){
             document.getElementById('email').textContent = mail;
             document.getElementById('phone').textContent = phone;
             document.getElementById('img1').src = "assets/"+img;
+            let roleNames = formattedResult.DATA[0][15];
+            $('#roles').text(roleNames);
+           
             }
 
            /*  $.ajax({
                 type:"POST",
                 url:"Components/contactDetails.cfc?method=setSessionId",
                 data:{userId:event.target.value}
-            }) */
+            }) 
             $.ajax({
                 type:"POST",
-                url:"Components/contactDetails.cfc?method=getOneContactById",/* getRolesById */
+                url:"Components/contactDetails.cfc?method=getOneContactById",/* getRolesById 
                 data:{contactId:event.target.value},
                 success:function(result){
                     let formattedResult=JSON.parse(result);
@@ -108,7 +114,7 @@ function editOne(event){
                         $('#roles').text(roleNames)
                     }
                 }
-            })
+            })*/
 
         }
     })

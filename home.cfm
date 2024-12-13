@@ -40,6 +40,7 @@
                         <div class="userText ms-5 mt-2 ps-0">#session.fullName#</div>
                         <button type="button" class="btn4 ms-3 mt-2" id="createb" onClick="createContact()">CREATE</button>
                         <button type = "submit" id = "schlr" class="btn4 ms-3 mt-2" onClick = "scheduler()">Scheduler</button>
+                        <button type="button" class="btn4 ms-3 mt-2" id="upldExcelFile" data-bs-toggle="modal" data-bs-target="##upldExcel">UPLOAD</button>
                     </div>
 
                     <div class="rightSide ms-5 mb-1 d-flex-column">
@@ -52,7 +53,7 @@
                         <!---<cfset local.objCreate=createObject("component", "components.contactDetails")>
                         <cfset local.result1=local.objCreate.viewContact()>--->
                         <cfset ormReload()>
-                        <cfset result1 = entityLoad("orm",{createdBy="#session.userId#"})>
+                        <cfset result1 = entityLoad("orm",{createdBy="#session.userId#",IsActive = 1})>
                         <cfloop array = "#result1#" item = "ormRow">
                             <div class="d-flex">
                                 <img src="assets/#ormRow.getimg()#" class="dataImg mt-1 mb-1">
@@ -299,6 +300,28 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div class="modal fade" id="upldExcel" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modalContent ms-3 d-flex-column">
+                                        <div class = "d-flex excelBtn ">
+                                            <button type="button" class="exclBtn1 text-light">Template With Data</button>
+                                            <button type="button" class="exclBtn2 ms-2 text-light">Plain Template</button>
+                                        </div>
+                                        <h5 class="btnexcl">Upload Excel File</h5>
+                                        <hr class="horizontalLineExcl">
+                                        <div class="textHead">Upload Excel*</div>
+                                        <input type = "file" name = "exclFile" id = "exclFile" class = "ms-4 exclFile" required>
+                                        <div class="d-flex exclSubmit">
+                                            <button type="submit" class="submitBtnExcl fw-bold">SUBMIT</button>
+                                            <button type="submit" name="closeBtnExcl" class="closeBtnExcl" data-bs-dismiss="modal">CLOSE</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -310,7 +333,7 @@
                     <cfset role_query = objPdf.getOneContactById(result.userId)><!--- getRolesById --->
                     <cfset roleString = "">
                     <cfloop query="role_query">
-                        <cfset roleString = roleString & " " & role_query.role_name>
+                        <cfset roleString = roleString & " " & role_query.ROLES>
                     </cfloop>
                     <cfset arrayAppend(roleArray, roleString)>
                 </cfloop>
