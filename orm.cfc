@@ -7,4 +7,5 @@
     <cfproperty  name="mail">
     <cfproperty  name="phone">
     <cfproperty  name="createdBy"> 
+    <cfproperty  name="IsActive"> 
 </cfcomponent>
