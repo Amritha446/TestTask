@@ -1,11 +1,12 @@
 <html>
     <head>
         <title>Login page</title>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" >
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" ></script>
+        <link href="css/bootstrap.min.css" rel="stylesheet" >
+        <script src="js/bootstrap.bundle.min.js"></script>
         <link href="css/style.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"  />
         <script src="js/validate1.js"></script>
+        <script src="js/google.js"></script>
     </head>
     <body>
         <cfoutput>
@@ -44,8 +45,8 @@
                             <button type="submit" name="submit" class="btn mt-5" onClick="return validate1()">LogIn</button>
                             <div class="text text-secondary mt-3">Or SignIn using</div>
                             <div class="images d-flex mt-1">
-                                <img src="assets/fb.JPG" alt="img" class="img ">
-                                <img src="assets/google.JPG" alt="img" class="img1">
+                                <button type="button" class = "btnNew"><img src="assets/fb.JPG" alt="img" class="img "></button>
+                                <button type="button" onClick = "googleData()" class = "btnNew"><img src="assets/google.JPG" alt="img" class="img1 pe-none"></button>
                             </div>
                             <div class="lastSec mt-3 ms-1 ">Dont't have an Account? <a href="signUp.cfm" class="link">SignUp Here!</a></div>
                         </form>
@@ -53,9 +54,9 @@
                 </div>
             </div>
             <cfif structKeyExists(form,"submit")>
-                <cfset local.loginObj=createObject("component","components.logic")>
-                <cfset local.result=local.loginObj.validateLogin(form.userName,form.userPassword1)>
-                <cfif  local.result == "true">
+                <cfset loginObj=createObject("component","components.contactDetails")>
+                <cfset result=loginObj.validateLogin(userName = form.userName , userPassword1 = form.userPassword1)>
+                <cfif  result == "true">
                     <cflocation  url="home.cfm">
                 <cfelse>
                     <div class="text-danger">Invalid Login attempt.</div>
