@@ -55,7 +55,7 @@
             </div>
             <cfif structKeyExists(form,"submit")>
                 <cfset loginObj=createObject("component","components.contactDetails")>
-                <cfset result=loginObj.validateLogin(form.userName,form.userPassword1)>
+                <cfset result=loginObj.validateLogin(userName = form.userName , userPassword1 = form.userPassword1)>
                 <cfif  result == "true">
                     <cflocation  url="home.cfm">
                 <cfelse>
