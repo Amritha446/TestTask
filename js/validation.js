@@ -14,6 +14,7 @@ function validation(){
     let country = document.forms["form"]["country"].value;
     let mail = document.forms["form"]["mail"].value;
     let phone = document.forms["form"]["phone"].value;
+    let multi = document.forms["form"]["multiSel"].value;
     let valid = true;
 
     if(title == ''){
@@ -113,6 +114,13 @@ function validation(){
     }
     else{
         document.getElementById('phoneError').textContent = '';
+    }
+    if(multi == ''){
+        document.getElementById('multiError').textContent = 'Please select';
+        valid = false;
+    }
+    else{
+        document.getElementById('multiError').textContent = '';
     }
     return valid;
 }
