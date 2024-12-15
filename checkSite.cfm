@@ -1,7 +1,7 @@
 <cfquery name="schedule" datasource="data_base1">
-    SELECT userId,title,text1,text2,gender,dob,img,address,street,pin,district,state,country,mail,phone 
+    SELECT dob,mail 
     FROM contact 
-    WHERE createdBy=<cfqueryparam value="#url.userName#" cfsqltype="cf_sql_varchar">
+    WHERE createdBy=<cfqueryparam value="#url.userId#" cfsqltype="cf_sql_varchar">
 </cfquery>
 <cfloop query = "schedule">
     <cfif DateFormat(schedule.dob,"dd-mm") EQ DateFormat(Now(),"dd-mm") >
