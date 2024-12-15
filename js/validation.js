@@ -1,4 +1,5 @@
 function validation(){
+    // alert(document.getElementById('multiSel').value);
     let title = document.forms["form"]["title"].value;
     let firstname = document.forms["form"]["text1"].value;
     let lastname = document.forms["form"]["text2"].value;
@@ -13,9 +14,8 @@ function validation(){
     let country = document.forms["form"]["country"].value;
     let mail = document.forms["form"]["mail"].value;
     let phone = document.forms["form"]["phone"].value;
+    let multi = document.forms["form"]["multiSel"].value;
     let valid = true;
-    //let currentDate = new Date();
-    //let formattedDate = currentDate.toISOString.split('T')[0];
 
     if(title == ''){
         document.getElementById('titleError').textContent = 'Please select one option';
@@ -50,7 +50,6 @@ function validation(){
         valid = false;
     }
     else{
-       // document.getElementById('dob1').setAttribute('max',formattedDate);
         document.getElementById('dobError').textContent = '';
     }
     if(img == ''){
@@ -115,6 +114,13 @@ function validation(){
     }
     else{
         document.getElementById('phoneError').textContent = '';
+    }
+    if(multi == ''){
+        document.getElementById('multiError').textContent = 'Please select';
+        valid = false;
+    }
+    else{
+        document.getElementById('multiError').textContent = '';
     }
     return valid;
 }

@@ -7,7 +7,7 @@
         <link href="css/style.css" rel="stylesheet">
         <script src="js/jquery.min.js"></script>
         <script src="js/ajax.js"></script>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css"/>       
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css"/>  
     </head>
     <body>
         <cfoutput>
@@ -33,13 +33,14 @@
                 <div class="d-flex secondSection">
                     <div class="leftSide mb-2 d-flex-column">
                         <cfif structKeyExists(session,"googleAccnt")>
-                            <img src="#session.profile#" class="userImg mt-3 ms-5 ps-2">
+                            <img src="#session.profile#" class="userImg mt-3 ms-4 ps-2">
                         <cfelse>
                             <img src="assets/#session.profile#" class="userImg mt-3 ms-3 ps-2">
                         </cfif>
-                        <div class="userText ms-5 mt-2 ps-3">#session.fullName#</div>
+                        <div class="userText ms-5 mt-2 ps-0">#session.fullName#</div>
                         <button type="button" class="btn4 ms-3 mt-2" id="createb" onClick="createContact()">CREATE</button>
                         <button type = "submit" id = "schlr" class="btn4 ms-3 mt-2" onClick = "scheduler()">Scheduler</button>
+                        <button type="button" class="btn4 ms-3 mt-2" id="upldExcelFile" data-bs-toggle="modal" data-bs-target="##upldExcel">UPLOAD</button>
                     </div>
 
                     <div class="rightSide ms-5 mb-1 d-flex-column">
@@ -52,7 +53,7 @@
                         <!---<cfset local.objCreate=createObject("component", "components.contactDetails")>
                         <cfset local.result1=local.objCreate.viewContact()>--->
                         <cfset ormReload()>
-                        <cfset result1 = entityLoad("orm",{createdBy="#session.userId#"})>
+                        <cfset result1 = entityLoad("orm",{createdBy="#session.userId#",IsActive = 1})>
                         <cfloop array = "#result1#" item = "ormRow">
                             <div class="d-flex">
                                 <img src="assets/#ormRow.getimg()#" class="dataImg mt-1 mb-1">
@@ -65,15 +66,18 @@
                                 onClick="deletePage(event)">DELETE</button>
                                 <button type="submit" class="btn5 ms-4 mt-2" data-bs-toggle="modal" data-bs-target="##viewContact" 
                                 id="viewb" value="#ormRow.getuserId()#" onClick="editOne(event)">VIEW</button>
+                                <hr class="horizontalLine">
                             </div>
-                            <hr class="horizontalLine">
+                            
                         </cfloop>
+                        
                         <div class="modal fade" id="editContact" tabindex="-1">
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-body d-flex">
                                         <div class="mainSection ms-3">
                                             <form method="post" name="form" enctype="multipart/form-data" id="createData">
+                                                <input type="hidden" value="" name = "contactId" id = "contactId">
                                                 <div class="headEdit mt-1 ">
                                                     <div class="headEditText" id="heading"></div>
                                                 </div>
@@ -114,7 +118,8 @@
                                                     </div>
                                                     <div class="d-flex-column">
                                                         <div class="textHead">DOB</div>
-                                                        <input type="date" name="dob" class="editBtn2 ms-3" id="dob1">   
+                                                        <input type="date" name="dob" class="editBtn2 ms-3" id="dob1" 
+                                                        max="#dateformat(now(),"yyyy-mm-dd")#" max-length="8">   
                                                         <div class="error text-danger" id="dobError"></div>
                                                     </div>
                                                 </div>
@@ -178,28 +183,70 @@
                                                         <div class="error text-danger" id="phoneError"></div>
                                                     </div>
                                                 </div>
+
+                                                <div class="d-flex-column" id = "multiSelect">
+                                                    <cfset result = createObject("component","components.contactDetails")>
+                                                    <cfset multiSelect = result.multiSelection()>
+                                                    <div class="textHead ">ROLE</div>
+                                                    <select id="multiSel" name="multiSel" data-live-search = "true" multiple = "true" class="ms-3" multiple aria-label = "Default select example">
+                                                        <cfloop query = #multiSelect#>
+                                                            <option value = "#multiSelect.role_id#" id = "multiSelected">#multiSelect.role_name#</option>
+                                                        </cfloop>
+                                                    </select>
+                                                    <div class="error text-danger" id="multiError"></div>
+                                                </div>
+
                                                 <div id="errorcontact"></div>
                                                 <button type="submit" value="submit" class="btn mt-3 mb-5 ms-5" name="submit" onClick="return validation()">SUBMIT</button>
                                                 <button type="button" class="btn btn-secondary ms-5" data-bs-dismiss="modal">Close</button>
                                             </form>
-                                        </div>
+                                        </div>  
                                         <div class="newUser"><img src="assets/newUser.JPG" alt="img" class="newUser" id="img2"></div>
                                     </div>                                        
                                 </div>
                             </div>
                         </div>
                         
-                        <cfif structKeyExists(form,"submit") AND NOT structKeyExists(session,"contactId")>
+                        <cfif structKeyExists(form,"submit") AND form.contactId == "">
                             <cfset editObj=createObject("component","components.contactDetails")>
-                            <cfset resultEdit=editObj.createContact(form.title,form.text1,form.text2,form.gender,form.dob,form.img,form.address,form.street,form.pin,form.district,form.state,form.country,form.mail,form.phone)>
+                            <cfset resultContact=editObj.createContact(title = form.title,
+                            text1 = form.text1,
+                            text2 = form.text2,
+                            gender = form.gender,
+                            dob = form.dob,
+                            img = form.img,
+                            address = form.address,
+                            street = form.street,
+                            pin = form.pin,
+                            district = form.district,
+                            state = form.state,
+                            country = form.country,
+                            mail = form.mail,
+                            phone = form.phone,
+                            multiSel = form.multiSel)>
+                            #resultContact#
+                        </cfif>
+                        <cfif structKeyExists(form,"submit") AND form.contactId != "">
+                            <cfset editObj=createObject("component","components.contactDetails")>
+                            <cfset resultEdit=editObj.editContact(title = form.title,
+                            text1 = form.text1,
+                            text2 = form.text2,
+                            gender = form.gender,
+                            dob = form.dob,
+                            img = form.img,
+                            address = form.address,
+                            street = form.street,
+                            pin = form.pin,
+                            district = form.district,
+                            state = form.state,
+                            country = form.country,
+                            mail = form.mail,
+                            phone = form.phone,
+                            userId = form.contactId,
+                            contactId = form.contactId,
+                            multiSel = form.multiSel)>
                             #resultEdit#
                         </cfif>
-                        <cfif structKeyExists(form,"submit") AND structKeyExists(session,"contactId")>
-                            <cfset editObj=createObject("component","components.contactDetails")>
-                            <cfset resultEdit=editObj.editContact(form.title,form.text1,form.text2,form.gender,form.dob,form.img,form.address,form.street,form.pin,form.district,form.state,form.country,form.mail,form.phone,session.contactId)>
-                            #resultEdit#
-                        </cfif>
-                        
                         <div class="modal fade" id="viewContact" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
                             <div class="modal-dialog">
                                 <div class="modal-content">
@@ -237,11 +284,15 @@
                                                     <div class="textHead">PHONE  :</div>
                                                     <div class = "data" id="phone"></div>
                                                 </div>
+                                                <div class="d-flex">
+                                                    <div class="textHead">ROLES  :</div>
+                                                    <div class = "data" id="roles"></div>
+                                                </div>
                                                 <button type="submit" name="closeBtn" class="closeBtn" >CLOSE</button>
                                             </form>
                                             <cfif structKeyExists(form, "submit")>
                                                 <cfset viewObj = createObject("component","components.contactDetails")>
-                                                <cfset result2 = viewObj.getOneContact()>
+                                                <cfset result2 = viewObj.getOneContactById()><!--- getOneContact --->
                                             </cfif>
                                         </div>
                                         <div class="newUser"><img src="assets/newUser.JPG" alt="img" class="newUser" id="img1"></div>
@@ -249,12 +300,44 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div class="modal fade" id="upldExcel" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modalContent ms-3 d-flex-column">
+                                        <div class = "d-flex excelBtn ">
+                                            <button type="button" class="exclBtn1 text-light">Template With Data</button>
+                                            <button type="button" class="exclBtn2 ms-2 text-light">Plain Template</button>
+                                        </div>
+                                        <h5 class="btnexcl">Upload Excel File</h5>
+                                        <hr class="horizontalLineExcl">
+                                        <div class="textHead">Upload Excel*</div>
+                                        <input type = "file" name = "exclFile" id = "exclFile" class = "ms-4 exclFile" required>
+                                        <div class="d-flex exclSubmit">
+                                            <button type="submit" class="submitBtnExcl fw-bold">SUBMIT</button>
+                                            <button type="submit" name="closeBtnExcl" class="closeBtnExcl" data-bs-dismiss="modal">CLOSE</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
             <cfif structKeyExists(form, "createPDF")>
                 <cfset objPdf = createObject("component", "components.contactDetails")>
-                <cfset result = objPdf.viewContact()> 
+                <cfset result = objPdf.viewContact()>
+                <cfset roleArray = arrayNew(1)>
+                <cfloop query = "result">
+                    <cfset role_query = objPdf.getOneContactById(result.userId)><!--- getRolesById --->
+                    <cfset roleString = "">
+                    <cfloop query="role_query">
+                        <cfset roleString = roleString & " " & role_query.ROLES>
+                    </cfloop>
+                    <cfset arrayAppend(roleArray, roleString)>
+                </cfloop>
+                <cfset queryAddColumn(result, "roles", roleArray)>
                 <cfdocument  format="PDF" overwrite="yes" filename = "./assets/createdPdf.pdf" >
                     <table border = "1">
                         <thead>
@@ -273,6 +356,7 @@
                                 <th>COUNTRY</th>
                                 <th>EMAIL</th>
                                 <th>PHONE</th>
+                                <th>ROLE</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -291,7 +375,8 @@
                                     <td>#result.state#</td>
                                     <td>#result.country#</td>
                                     <td>#result.mail#</td>
-                                    <td>#result.phone#</td>                                   
+                                    <td>#result.phone#</td> 
+                                    <td>#result.roles#</td>
                                 </tr>
                             </cfloop>
                         </tbody>

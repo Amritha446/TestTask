@@ -5,7 +5,6 @@ function logoutUser(){
             url:"Components/contactDetails.cfc?method=logout",
             success:function(result){
                 if(result){
-                    location.reload()
                     return true;
                 }
             }
@@ -27,57 +26,20 @@ function createContact(){
     })
 }
 
-/*function readOneContact(event){
-    console.log(event.target.value)
-    $.ajax({
-        type:"POST",
-        url:"Components/contactDetails.cfc?method=getOneContact",
-        data:{userId:event.target.value},
-        success:function(result){
-            
-            let formattedResult = JSON.parse(result);
-            console.log(formattedResult)
-            let title = formattedResult.DATA[0][0];
-            let text1 = formattedResult.DATA[0][1];
-            let text2 = formattedResult.DATA[0][2];
-            let gender = formattedResult.DATA[0][3];
-            let dob = formattedResult.DATA[0][4];
-            let address = formattedResult.DATA[0][5];
-            let street = formattedResult.DATA[0][6];
-            let pin = formattedResult.DATA[0][7];
-            let district = formattedResult.DATA[0][8];
-            let state = formattedResult.DATA[0][9];
-            let country = formattedResult.DATA[0][10];
-            let mail = formattedResult.DATA[0][11];
-            let phone = formattedResult.DATA[0][12];
-            let img = formattedResult.DATA[0][13];
-            
-            document.getElementById('name').textContent = title +text1 + " " + text2;
-            document.getElementById('gender').textContent = gender;
-            document.getElementById('dob').textContent = dob;
-            document.getElementById('address').textContent = address + ","+street+ "," + district +","+state+ "," +country;
-            document.getElementById('pincode').textContent = pin;
-            document.getElementById('email').textContent = mail;
-            document.getElementById('phone').textContent = phone;
-            document.getElementById('img1').src = "assets/"+img;
-            
-        }
-    })
-}*/
-
 function editOne(event){
+
     document.getElementById('heading').textContent = "EDIT CONTACT";
     document.getElementById('createData').reset();
-    document.getElementById('img2').value = "";
+    //document.getElementById('img2').value = "";
     $('.error').text("");
     $.ajax({
-        type:"POST",
-        url:"Components/contactDetails.cfc?method=getOneContact",
-        data:{userId:event.target.value},
-        success:function(result){
         
+        type:"POST",
+        url:"Components/contactDetails.cfc?method=getOneContactById", /* getOneContact */ 
+        data:{contactId:event.target.value},
+        success:function(result){
+            console.log(result)
             let formattedResult=JSON.parse(result);
-            console.log(formattedResult)
             let title = formattedResult.DATA[0][0];
             let text1 = formattedResult.DATA[0][1];
             let text2 = formattedResult.DATA[0][2];
@@ -108,23 +70,52 @@ function editOne(event){
             document.getElementById('mail').value = mail;
             document.getElementById('phone1').value = phone;
             document.getElementById('img2').src = "assets/"+img;
+            document.getElementById('contactId').value = event.target.value; 
+            console.log(formattedResult.DATA[0][16])
+            let roleIds = formattedResult.DATA[0][16].split(",");
+            $('#multiSel').val(roleIds)
             }else{
-                console.log('hi')
             document.getElementById('name').textContent = title +text1 + " " + text2;
             document.getElementById('gender').textContent = gender;
             document.getElementById('dob').textContent = dob;
-            document.getElementById('address').textContent = address + ","+street+ "," + district +","+state+ "," +country;
+            document.getElementById('address').textContent = address + ","+street+ "," + district + "," +state+ "," +country;
             document.getElementById('pincode').textContent = pin;
             document.getElementById('email').textContent = mail;
             document.getElementById('phone').textContent = phone;
             document.getElementById('img1').src = "assets/"+img;
+            let roleNames = formattedResult.DATA[0][15];
+            $('#roles').text(roleNames);
+           
             }
 
-            $.ajax({
+           /*  $.ajax({
                 type:"POST",
                 url:"Components/contactDetails.cfc?method=setSessionId",
                 data:{userId:event.target.value}
-            })
+            }) 
+            $.ajax({
+                type:"POST",
+                url:"Components/contactDetails.cfc?method=getOneContactById",/* getRolesById 
+                data:{contactId:event.target.value},
+                success:function(result){
+                    let formattedResult=JSON.parse(result);
+                    if(event.target.id == 'editb'){
+                        let roleIds = [];
+                        formattedResult.DATA.forEach(element => {
+                            roleIds.push(element[0])
+                        });
+                        $('#multiSel').val(roleIds)
+                    }else{
+                        let roleNames = [];
+                        formattedResult.DATA.forEach(element => {
+                            roleNames.push(element[1])
+                            console.log(roleNames)
+                        });
+                        $('#roles').text(roleNames)
+                    }
+                }
+            })*/
+
         }
     })
 }
@@ -134,9 +125,9 @@ function deletePage(event){
         $.ajax({
             type:"POST",
             url:"Components/contactDetails.cfc?method=delContact",
-            data:{userId:event.target.value},
+            data:{contactId:event.target.value},
             success:function(result){
-                location.reload()
+                event.target.parentNode.remove()
             }
         })
     }
@@ -170,6 +161,14 @@ function scheduler(){
     $.ajax({
         type:"POST",
         url:"components/schedule.cfc?method=scheduleDate"  
+    })
+}
+
+function multiSelect(){
+    $.ajax({
+        type:"POST",
+        url:"Components/contactDetails.cfc?method=multiSelection"
+        
     })
 }
 
