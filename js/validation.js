@@ -1,4 +1,5 @@
 function validation(){
+    // alert(document.getElementById('multiSel').value);
     let title = document.forms["form"]["title"].value;
     let firstname = document.forms["form"]["text1"].value;
     let lastname = document.forms["form"]["text2"].value;
@@ -13,6 +14,7 @@ function validation(){
     let country = document.forms["form"]["country"].value;
     let mail = document.forms["form"]["mail"].value;
     let phone = document.forms["form"]["phone"].value;
+    let multi = document.forms["form"]["multiSel"].value;
     let valid = true;
 
     if(title == ''){
@@ -112,6 +114,13 @@ function validation(){
     }
     else{
         document.getElementById('phoneError').textContent = '';
+    }
+    if(multi == ''){
+        document.getElementById('multiError').textContent = 'Please select';
+        valid = false;
+    }
+    else{
+        document.getElementById('multiError').textContent = '';
     }
     return valid;
 }

@@ -1,12 +1,13 @@
 <cfcomponent>
-    <cfset this.name = 'this.name'>
+    <cfset this.name = 'addresbook'>
     <cfset this.sessionManagement = true>
-    <cfset this.sessionTimeout=createTimespan(0, 1, 0, 0)>
+    <cfset this.sessionTimeout=createTimespan(0, 0, 30, 0)>
     <cfset this.datasource = "data_base1">
-
+    <cfset this.ormEnabled="true">
+    
     <cffunction  name="onRequest" returnType="void">
         <cfargument  name="requestPage" required="true"> 
-        <cfset local.excludePages = ["/Amritha_CF/testTask/TestTask/login.cfm","/Amritha_CF/testTask/TestTask/signUp.cfm"]>
+        <cfset local.excludePages = ["/login.cfm","/signUp.cfm","/googlesso.cfm","/checkSite.cfm"]>
         <cfif ArrayContains(local.excludePages,arguments.requestPage)>
             <cfinclude  template="#arguments.requestPage#">
         <cfelseif structKeyExists(session, "isAuthenticated")>
@@ -15,5 +16,5 @@
             <cfinclude  template="login.cfm">
         </cfif>
     </cffunction> 
-    
+
 </cfcomponent>
