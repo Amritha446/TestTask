@@ -33,13 +33,14 @@
                 <div class="d-flex secondSection">
                     <div class="leftSide mb-2 d-flex-column">
                         <cfif structKeyExists(session,"googleAccnt")>
-                            <img src="#session.profile#" class="userImg mt-3 ms-5 ps-2">
+                            <img src="#session.profile#" class="userImg mt-3 ms-4 ps-2">
                         <cfelse>
                             <img src="assets/#session.profile#" class="userImg mt-3 ms-3 ps-2">
                         </cfif>
-                        <div class="userText ms-5 mt-2 ps-3">#session.fullName#</div>
+                        <div class="userText ms-5 mt-2 ps-0">#session.fullName#</div>
                         <button type="button" class="btn4 ms-3 mt-2" id="createb" onClick="createContact()">CREATE</button>
                         <button type = "submit" id = "schlr" class="btn4 ms-3 mt-2" onClick = "scheduler()">Scheduler</button>
+                        <button type="button" class="btn4 ms-3 mt-2" id="upldExcelFile" data-bs-toggle="modal" data-bs-target="##upldExcel">UPLOAD</button>
                     </div>
 
                     <div class="rightSide ms-5 mb-1 d-flex-column">
@@ -52,7 +53,7 @@
                         <!---<cfset local.objCreate=createObject("component", "components.contactDetails")>
                         <cfset local.result1=local.objCreate.viewContact()>--->
                         <cfset ormReload()>
-                        <cfset result1 = entityLoad("orm",{createdBy="#session.userId#"})>
+                        <cfset result1 = entityLoad("orm",{createdBy="#session.userId#",IsActive = 1})>
                         <cfloop array = "#result1#" item = "ormRow">
                             <div class="d-flex">
                                 <img src="assets/#ormRow.getimg()#" class="dataImg mt-1 mb-1">
@@ -65,15 +66,18 @@
                                 onClick="deletePage(event)">DELETE</button>
                                 <button type="submit" class="btn5 ms-4 mt-2" data-bs-toggle="modal" data-bs-target="##viewContact" 
                                 id="viewb" value="#ormRow.getuserId()#" onClick="editOne(event)">VIEW</button>
+                                <hr class="horizontalLine">
                             </div>
-                            <hr class="horizontalLine">
+                            
                         </cfloop>
+                        
                         <div class="modal fade" id="editContact" tabindex="-1">
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-body d-flex">
                                         <div class="mainSection ms-3">
                                             <form method="post" name="form" enctype="multipart/form-data" id="createData">
+                                                <input type="hidden" value="" name = "contactId" id = "contactId">
                                                 <div class="headEdit mt-1 ">
                                                     <div class="headEditText" id="heading"></div>
                                                 </div>
@@ -189,7 +193,7 @@
                                                             <option value = "#multiSelect.role_id#" id = "multiSelected">#multiSelect.role_name#</option>
                                                         </cfloop>
                                                     </select>
-                                                   
+                                                    <div class="error text-danger" id="multiError"></div>
                                                 </div>
 
                                                 <div id="errorcontact"></div>
@@ -203,9 +207,9 @@
                             </div>
                         </div>
                         
-                        <cfif structKeyExists(form,"submit") AND NOT structKeyExists(session,"contactId")>
+                        <cfif structKeyExists(form,"submit") AND form.contactId == "">
                             <cfset editObj=createObject("component","components.contactDetails")>
-                            <cfset resultContact=editObj.createContact({title = form.title,
+                            <cfset resultContact=editObj.createContact(title = form.title,
                             text1 = form.text1,
                             text2 = form.text2,
                             gender = form.gender,
@@ -219,12 +223,12 @@
                             country = form.country,
                             mail = form.mail,
                             phone = form.phone,
-                            multiSel = form.multiSel})>
+                            multiSel = form.multiSel)>
                             #resultContact#
                         </cfif>
-                        <cfif structKeyExists(form,"submit") AND structKeyExists(session,"contactId")>
+                        <cfif structKeyExists(form,"submit") AND form.contactId != "">
                             <cfset editObj=createObject("component","components.contactDetails")>
-                            <cfset resultEdit=editObj.editContact({title = form.title,
+                            <cfset resultEdit=editObj.editContact(title = form.title,
                             text1 = form.text1,
                             text2 = form.text2,
                             gender = form.gender,
@@ -238,10 +242,11 @@
                             country = form.country,
                             mail = form.mail,
                             phone = form.phone,
-                            contactId = session.contactId})>
+                            userId = form.contactId,
+                            contactId = form.contactId,
+                            multiSel = form.multiSel)>
                             #resultEdit#
                         </cfif>
-                        
                         <div class="modal fade" id="viewContact" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
                             <div class="modal-dialog">
                                 <div class="modal-content">
@@ -281,13 +286,13 @@
                                                 </div>
                                                 <div class="d-flex">
                                                     <div class="textHead">ROLES  :</div>
-                                                    <div class = "data" id="role"></div>
+                                                    <div class = "data" id="roles"></div>
                                                 </div>
                                                 <button type="submit" name="closeBtn" class="closeBtn" >CLOSE</button>
                                             </form>
                                             <cfif structKeyExists(form, "submit")>
                                                 <cfset viewObj = createObject("component","components.contactDetails")>
-                                                <cfset result2 = viewObj.getOneContact()>
+                                                <cfset result2 = viewObj.getOneContactById()><!--- getOneContact --->
                                             </cfif>
                                         </div>
                                         <div class="newUser"><img src="assets/newUser.JPG" alt="img" class="newUser" id="img1"></div>
@@ -295,12 +300,44 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div class="modal fade" id="upldExcel" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modalContent ms-3 d-flex-column">
+                                        <div class = "d-flex excelBtn ">
+                                            <button type="button" class="exclBtn1 text-light">Template With Data</button>
+                                            <button type="button" class="exclBtn2 ms-2 text-light">Plain Template</button>
+                                        </div>
+                                        <h5 class="btnexcl">Upload Excel File</h5>
+                                        <hr class="horizontalLineExcl">
+                                        <div class="textHead">Upload Excel*</div>
+                                        <input type = "file" name = "exclFile" id = "exclFile" class = "ms-4 exclFile" required>
+                                        <div class="d-flex exclSubmit">
+                                            <button type="submit" class="submitBtnExcl fw-bold">SUBMIT</button>
+                                            <button type="submit" name="closeBtnExcl" class="closeBtnExcl" data-bs-dismiss="modal">CLOSE</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
             <cfif structKeyExists(form, "createPDF")>
                 <cfset objPdf = createObject("component", "components.contactDetails")>
-                <cfset result = objPdf.viewContact()> 
+                <cfset result = objPdf.viewContact()>
+                <cfset roleArray = arrayNew(1)>
+                <cfloop query = "result">
+                    <cfset role_query = objPdf.getOneContactById(result.userId)><!--- getRolesById --->
+                    <cfset roleString = "">
+                    <cfloop query="role_query">
+                        <cfset roleString = roleString & " " & role_query.ROLES>
+                    </cfloop>
+                    <cfset arrayAppend(roleArray, roleString)>
+                </cfloop>
+                <cfset queryAddColumn(result, "roles", roleArray)>
                 <cfdocument  format="PDF" overwrite="yes" filename = "./assets/createdPdf.pdf" >
                     <table border = "1">
                         <thead>
@@ -319,6 +356,7 @@
                                 <th>COUNTRY</th>
                                 <th>EMAIL</th>
                                 <th>PHONE</th>
+                                <th>ROLE</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -337,7 +375,8 @@
                                     <td>#result.state#</td>
                                     <td>#result.country#</td>
                                     <td>#result.mail#</td>
-                                    <td>#result.phone#</td>                                   
+                                    <td>#result.phone#</td> 
+                                    <td>#result.roles#</td>
                                 </tr>
                             </cfloop>
                         </tbody>
