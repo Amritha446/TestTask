@@ -51,8 +51,11 @@ body{
 }
 .text{
     font-size:13px;
-    font-color:rgb(73, 69, 69);
+    color:rgb(73, 69, 69);
     margin-left:70px;
+}
+.icons{
+    color: #fff;;
 }
 .icon{
     height:35px;
@@ -147,7 +150,7 @@ body{
     width:3vw;
 }
 .leftSide{
-    height:14vw;
+    height:auto;
     width:12vw;
     background-color:white;
     margin-left:5vw;
@@ -161,12 +164,17 @@ body{
 }
 .textCreate{
     color:#337ab7;
-    margin-left:8vw;
+    margin-left:7vw;
     font-size:15px;
 }
 .textCreate1{
     color:#337ab7;
-    margin-left:3vw;
+    margin-left:4vw;
+    font-size:15px;
+}
+.textCreate2{
+    color:#337ab7;
+    margin-left:9vw;
     font-size:15px;
 }
 .horizontalLine{
@@ -188,17 +196,25 @@ body{
 }
 .userImg{
     margin-left:3vw;
+    border-radius: 50px;
 }
 .dataImg{
     height:4vw;
     width:4vw;
     margin-left:1vw;
+    border-radius: 50px;
 }
 .dataText{
     color:#337ab7;
     font-size:15px;
-    margin-left:3vw;
     margin-top:1vw;
+    width:90px;
+}
+.dataText1{
+    color:#337ab7;
+    font-size:15px;
+    margin-top:1vw;
+    width:130px;
 }
 .btn5{
     height:2vw;
@@ -243,7 +259,13 @@ body{
     margin-top:2vw;
     font-weight:bold;
 }
-
+.data{
+    margin-top:27px;
+    font-size:11px;
+    color:#337ab7;
+    font-weight:bold;
+    margin-left:1vw;
+}
 .editBtn{
     width:5vw;
     border-left:transparent;
@@ -315,4 +337,76 @@ body{
     height: 2vw;border-radius:10px;
     font-size:11px;
     margin-left:10vw;
+}
+button.btnNew{
+    border: none;
+    background: white;
+}
+.modalContent{
+    height: 25vw;
+    width: 50vw;
+    background:white;
+    border: 2px #337ab7; ;
+}
+.exclBtn{
+    border:pink;
+    height:2vw;
+    width:2vw;
+    margin-left:50px;
+    
+}
+.exclBtn1{
+    margin-left:35vw;
+    font-size:10px;
+    margin-top:20px;
+    background-color:#5fa9fe;
+    border:transparent;
+
+}
+.exclBtn2{
+    font-size:10px;
+    margin-top:20px;
+    background-color:#77c4b4;
+    border:transparent;
+}
+.btnexcl{
+    color:#337ab7; 
+    margin-top:5vw;
+    margin-left:3vw;
+}
+.horizontalLineExcl{
+    height:2px;
+    color:#729bc0;
+    background-color:#729bc0;
+    margin-left:25px;
+    margin-right:5px;
+    margin-top:-5px;
+    width:35vw;
+}
+.exclFile{
+    font-size:10px;
+}
+.submitBtnExcl{
+    background-color:#337ab7; 
+    color:white;
+    width:6vw;
+    height: 2vw;
+    border-radius:20px;
+    font-size:13px;
+    margin-left:10vw;
+    border:#337ab7; 
+    margin-left:2vw;
+    margin-top:4vw;
+}
+.closeBtnExcl{
+    background-color:white; 
+    color:#337ab7;
+    width:6vw;
+    height: 2vw;
+    border-radius:20px;
+    font-size:13px;
+    margin-left:10vw;
+    border:1px solid #337ab7; 
+    margin-left:2vw;
+    margin-top:4vw;
 }
