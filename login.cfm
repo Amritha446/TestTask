@@ -54,9 +54,9 @@
                 </div>
             </div>
             <cfif structKeyExists(form,"submit")>
-                <cfset local.loginObj=createObject("component","components.contactDetails")>
-                <cfset local.result=local.loginObj.validateLogin(form.userName,form.userPassword1)>
-                <cfif  local.result == "true">
+                <cfset loginObj=createObject("component","components.contactDetails")>
+                <cfset result=loginObj.validateLogin(userName = form.userName , userPassword1 = form.userPassword1)>
+                <cfif  result == "true">
                     <cflocation  url="home.cfm">
                 <cfelse>
                     <div class="text-danger">Invalid Login attempt.</div>
