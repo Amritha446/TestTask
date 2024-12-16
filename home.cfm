@@ -25,7 +25,7 @@
                     <form method="post">
                         <button type="submit" class="btn2 mb-1" name = "createPDF"><img src="assets/pdf.JPG" class="hImg" alt="img"></button>
                     </form>
-                    <button type="button" class="btn3" onClick="excelCreate()"><img src="assets/xml.JPG" class="hImg" alt="img"></button>
+                    <button type="button" class="btn3" onClick="excelCreate('allContacts')" id = "excelCreate"><img src="assets/xml.JPG" class="hImg" alt="img"></button>
                     <button type="button" class="btn3" onClick="window.print();return false;">
                         <img src="assets/draft.JPG" class="hImg" alt="img">
                     </button>
@@ -305,18 +305,33 @@
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modalContent ms-3 d-flex-column">
-                                        <div class = "d-flex excelBtn ">
-                                            <button type="button" class="exclBtn1 text-light">Template With Data</button>
-                                            <button type="button" class="exclBtn2 ms-2 text-light">Plain Template</button>
-                                        </div>
-                                        <h5 class="btnexcl">Upload Excel File</h5>
-                                        <hr class="horizontalLineExcl">
-                                        <div class="textHead">Upload Excel*</div>
-                                        <input type = "file" name = "exclFile" id = "exclFile" class = "ms-4 exclFile" required>
-                                        <div class="d-flex exclSubmit">
-                                            <button type="submit" class="submitBtnExcl fw-bold">SUBMIT</button>
-                                            <button type="submit" name="closeBtnExcl" class="closeBtnExcl" data-bs-dismiss="modal">CLOSE</button>
-                                        </div>
+                                        <form method = "post" name = "form" enctype='multipart/form-data'>
+                                            <div class = "d-flex excelBtn ">
+                                                <button type="submit" class="exclBtn1 text-light" name="withData" onClick="excelCreate()">Template With Data</button>
+                                                <button type="submit" class="exclBtn2 ms-2 text-light" name="plainData" id = "plainData" onClick = "plainExcel()">Plain Template</button>
+                                            </div>
+                                            <h5 class="btnexcl">Upload Excel File</h5>
+                                            <hr class="horizontalLineExcl">
+                                            <div class="textHead">Upload Excel*</div>
+                                            <input type = "file" name = "exclFile" id = "exclFile" class = "ms-4 exclFile" required>
+                                            <div class="d-flex exclSubmit">
+                                                <button type="submit" class="submitBtnExcl fw-bold">SUBMIT</button>
+                                                <button type="submit" name="closeBtnExcl" class="closeBtnExcl" data-bs-dismiss="modal">CLOSE</button>
+                                            </div>
+                                        </form>
+
+                                        <cfif structKeyExists(form, "exclFile")>
+                                            <cffile action="upload" 
+                                                filefield="exclFile" 
+                                                destination="C:\ColdFusion2021\cfusion\wwwroot\Amritha_CF\testTask\TestTask\assets1" 
+                                                nameconflict="overwrite">
+    
+                                            <cfset filePath = getDirectoryFromPath(cffile.serverFile) & cffile.serverFile>
+                                            <cfset excelRead = createObject("component","components.contactDetails")>
+                                            <cfset result = excelRead.processExcel(filePath = filePath)>
+                                            
+                                        </cfif>
+
                                     </div>
                                 </div>
                             </div>
