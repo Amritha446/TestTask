@@ -136,17 +136,21 @@ function deletePage(event){
     }
 }
 
-function excelCreate(){
+function excelCreate(value){
+    
     $.ajax({
         type:"POST",
         url:"components/contactDetails.cfc?method=createExcel",
+        data:{useState:value},
         success:function(result){ 
+            console.log(result)
             var formattedResult = JSON.parse(result);
             var filePath = "./assets/spreadsheet/" + formattedResult;
             console.log(filePath)
             fileDownload(filePath,"contactDetails.xlsx")
         }
     })
+    
 }
 
 function fileDownload(url,file){
@@ -155,6 +159,35 @@ function fileDownload(url,file){
     anch.href = url;
     anch.click();
     anch.remove();
+}
+
+function readExcel(){
+    $.ajax({
+        type:"POST",
+        url:"components/contactDetails.cfc?method=readExcel",
+        success:function(result){ 
+            console.log(result)
+            var formattedResult = JSON.parse(result);
+            var filePath = "./assets/spreadsheet/" + formattedResult;
+            console.log(filePath)
+            fileDownload(filePath,"readSheet.xlsx")
+        }
+    })
+}
+
+
+function plainExcel(){
+    $.ajax({
+        type:"POST",
+        url:"components/contactDetails.cfc?method=plainExcel",
+        success:function(result){ 
+            console.log(result)
+            var formattedResult = JSON.parse(result);
+            var filePath = "./assets/spreadsheet/" + formattedResult;
+            console.log(filePath)
+            fileDownload(filePath,"contactDetails.xlsx")
+        }
+    })
 }
 
 function scheduler(){

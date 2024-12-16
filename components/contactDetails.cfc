@@ -214,6 +214,30 @@
         <cfreturn local.viewdata>  
     </cffunction>
 
+    <cffunction  name="viewExcelContact" access="remote" returnType="query">
+        <cfquery name="local.viewdata">
+            SELECT 
+                userId,
+                title,
+                text1,
+                text2,
+                gender,  
+                dob,
+                address,
+                street,
+                pin,
+                district,
+                state,
+                country,
+                mail,
+                phone 
+            FROM contact 
+            WHERE createdBy=<cfqueryparam value="#session.userId#" cfsqltype="cf_sql_varchar">
+                AND IsActive = 1;
+        </cfquery>
+        <cfreturn local.viewdata>  
+    </cffunction>
+    
      <!--- <cffunction name="getRolesById" access="remote" returnType="query" returnFormat="json">
         <cfargument name = "contactId">
         <cfquery name = "local.getContactRoles">
@@ -413,21 +437,108 @@
     </cffunction>
 
     <cffunction  name="createExcel" access="remote" returnType="string" returnFormat="json">
+        <cfargument name = "useState">
+        <cfset local.id = createUUID()>
         <cfset local.filename = session.fullName>
         <cfset local.todaysDate = dateformat(Now())>
-        <cfset local.result = viewContact()>
+        <!--- <cfif arguments.useState = "allContacts"> --->
+            <cfset local.result = viewContact()>
+        <!--- <cfelse> --->
+            <cfset local.result1 = viewExcelContact()>
+        <!--- </cfif> --->
         <cfset roleArray = arrayNew(1)>
         <cfloop query = "result">
             <cfset role_query = getOneContactById(local.result.userId)><!--- getRolesById --->
             <cfset roleString = "">
             <cfloop query="role_query">
-                <cfset roleString =roleString & " " & role_query.ROLES>
+                <cfset roleString = roleString & " " & role_query.ROLES>
             </cfloop>
             <cfset arrayAppend(roleArray, roleString)>
         </cfloop>
         <cfset queryAddColumn(local.result, "roles", roleArray)>
-        <cfspreadsheet  action="write" filename="../assets/spreadsheet/#local.filename##" "##local.todaysDate#.xlsx" query="local.result">
-        <cfreturn "#local.filename#.xlsx">
+        <cfspreadsheet  action="write" filename="../assets/spreadsheet/#local.id##" "##local.todaysDate#.xlsx" query="local.result">
+        <cfreturn "#local.id#.xlsx">
+    </cffunction>
+
+    <cffunction name = "processExcel" access = "public" returnType = "void">
+        <cfargument name = "filePath">
+        <cfspreadsheet action="read" 
+                       src="#arguments.filePath#" 
+                       sheet="1" 
+                       query="spreadsheetData">
+        
+        <cfset validData = []>
+        <cfset errorMessages = []>
+        <cfloop query="#spreadsheetData#">
+            <cfset rowErrors = []>
+            <cfif len(trim(row.Column)) EQ 0>
+                <cfset arrayAppend(rowErrors, "Column cannot be empty.")>
+            </cfif>
+
+            <cfif arrayLen(rowErrors) EQ 0>
+                <cfset arrayAppend(validData, row)>
+                <cfquery name="excelData">
+                    INSERT INTO 
+                    contact(
+                        title,
+                        text1,
+                        text2,
+                        gender,
+                        dob, 
+                        address,
+                        street,
+                        pin,
+                        district,
+                        state,
+                        country,
+                        mail,
+                        phone,
+                        createdBy,
+                        IsActive 
+                    ) 
+                    values(
+                        <cfqueryparam value="#row.title#" cfsqltype="cf_sql_varchar">,
+                        <cfqueryparam value="#arguments.text1#" cfsqltype="cf_sql_varchar">,
+                        <cfqueryparam value="#arguments.text2#" cfsqltype="cf_sql_varchar">,
+                        <cfqueryparam value="#arguments.gender#" cfsqltype="cf_sql_varchar">,
+                        <cfqueryparam value="#arguments.dob#" cfsqltype="cf_sql_varchar">,
+                        <cfqueryparam value="#arguments.address#" cfsqltype="cf_sql_varchar">,
+                        <cfqueryparam value="#arguments.street#" cfsqltype="cf_sql_varchar">,
+                        <cfqueryparam value="#arguments.pin#" cfsqltype="cf_sql_varchar">,
+                        <cfqueryparam value="#arguments.district#" cfsqltype="cf_sql_varchar">,
+                        <cfqueryparam value="#arguments.state#" cfsqltype="cf_sql_varchar">,
+                        <cfqueryparam value="#arguments.country#" cfsqltype="cf_sql_varchar">,
+                        <cfqueryparam value="#arguments.mail#" cfsqltype="cf_sql_varchar">,
+                        <cfqueryparam value="#arguments.phone#" cfsqltype="cf_sql_varchar">,
+                        <cfqueryparam value="#session.userId#" cfsqltype="cf_sql_varchar">,
+                        <cfqueryparam value="#isActive#" cfsqltype="cf_sql_bit">
+                    );
+                </cfquery>
+            <cfelse>
+                <cfset arrayAppend(errorMessages, "Row " & row.RowNum & ": " & arrayToList(rowErrors))>
+            </cfif>
+        </cfloop>
+
+    </cffunction>
+
+    <cffunction  name="viewContactExcel" access="remote" returnType="query">
+        <cfquery name = "local.viewData">
+            SELECT name
+            FROM sys.columns
+            WHERE object_id = OBJECT_ID('contact');
+        </cfquery>
+        <cfreturn local.viewdata>
+    </cffunction>
+
+    <cffunction  name="plainExcel" access="remote" returnType="string" returnFormat="json">
+        <cfset local.id = createUUID()>
+        <cfset local.result = viewContactExcel()>
+        <cfspreadsheet  action="write" filename="../assets/spreadsheet/#local.id#.xlsx" query = "local.result">
+        <!--- <cfloop array="#header#" index="rowIndex">
+            <cfspreadsheet action="write" data="#rowIndex#" startrow="#rowIndex#" />
+        </cfloop>
+        <cfset header = ["Title","First Name","Last Name","DOB"]> --->
+        <cfreturn "#local.id#.xlsx">
     </cffunction>
     
     <cffunction name="multiSelection" access="public" returnType="query">

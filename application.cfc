@@ -1,7 +1,7 @@
 <cfcomponent>
     <cfset this.name = 'addresbook'>
     <cfset this.sessionManagement = true>
-    <cfset this.sessionTimeout=createTimespan(0, 0, 30, 0)>
+    <cfset this.sessionTimeout=createTimespan(0, 1, 0, 0)>
     <cfset this.datasource = "data_base1">
     <cfset this.ormEnabled="true">
     
