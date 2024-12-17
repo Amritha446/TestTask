@@ -460,7 +460,8 @@
         <cfreturn "#local.id#.xlsx">
     </cffunction>
 
-    <cffunction name = "processExcel" access = "public" returnType = "void">
+    <cffunction name = "processExcel" access = "public" returnType = "String">
+        <cfset local.result = viewExcelContact()>
         <cfargument name = "filePath">
         <cfspreadsheet action="read" 
                        src="#arguments.filePath#" 
@@ -471,54 +472,60 @@
         <cfset errorMessages = []>
         <cfloop query="#spreadsheetData#">
             <cfset rowErrors = []>
+
             <cfif len(trim(row.Column)) EQ 0>
                 <cfset arrayAppend(rowErrors, "Column cannot be empty.")>
             </cfif>
 
             <cfif arrayLen(rowErrors) EQ 0>
                 <cfset arrayAppend(validData, row)>
-                <cfquery name="excelData">
-                    INSERT INTO 
-                    contact(
-                        title,
-                        text1,
-                        text2,
-                        gender,
-                        dob, 
-                        address,
-                        street,
-                        pin,
-                        district,
-                        state,
-                        country,
-                        mail,
-                        phone,
-                        createdBy,
-                        IsActive 
-                    ) 
-                    values(
-                        <cfqueryparam value="#row.title#" cfsqltype="cf_sql_varchar">,
-                        <cfqueryparam value="#arguments.text1#" cfsqltype="cf_sql_varchar">,
-                        <cfqueryparam value="#arguments.text2#" cfsqltype="cf_sql_varchar">,
-                        <cfqueryparam value="#arguments.gender#" cfsqltype="cf_sql_varchar">,
-                        <cfqueryparam value="#arguments.dob#" cfsqltype="cf_sql_varchar">,
-                        <cfqueryparam value="#arguments.address#" cfsqltype="cf_sql_varchar">,
-                        <cfqueryparam value="#arguments.street#" cfsqltype="cf_sql_varchar">,
-                        <cfqueryparam value="#arguments.pin#" cfsqltype="cf_sql_varchar">,
-                        <cfqueryparam value="#arguments.district#" cfsqltype="cf_sql_varchar">,
-                        <cfqueryparam value="#arguments.state#" cfsqltype="cf_sql_varchar">,
-                        <cfqueryparam value="#arguments.country#" cfsqltype="cf_sql_varchar">,
-                        <cfqueryparam value="#arguments.mail#" cfsqltype="cf_sql_varchar">,
-                        <cfqueryparam value="#arguments.phone#" cfsqltype="cf_sql_varchar">,
-                        <cfqueryparam value="#session.userId#" cfsqltype="cf_sql_varchar">,
-                        <cfqueryparam value="#isActive#" cfsqltype="cf_sql_bit">
-                    );
-                </cfquery>
+                <cfif local.result.mail EQ row.mail>
+                    <cfquery name="excelDataUpdate">
+                    </cfquery>
+                <cfelse>
+                    <cfquery name="excelDataInsert">
+                        INSERT INTO 
+                        contact(
+                            title,
+                            text1,
+                            text2,
+                            gender,
+                            dob, 
+                            address,
+                            street,
+                            pin,
+                            district,
+                            state,
+                            country,
+                            mail,
+                            phone,
+                            createdBy,
+                            IsActive 
+                        ) 
+                        values(
+                            <cfqueryparam value="#row.title#" cfsqltype="cf_sql_varchar">,
+                            <cfqueryparam value="#arguments.text1#" cfsqltype="cf_sql_varchar">,
+                            <cfqueryparam value="#arguments.text2#" cfsqltype="cf_sql_varchar">,
+                            <cfqueryparam value="#arguments.gender#" cfsqltype="cf_sql_varchar">,
+                            <cfqueryparam value="#arguments.dob#" cfsqltype="cf_sql_varchar">,
+                            <cfqueryparam value="#arguments.address#" cfsqltype="cf_sql_varchar">,
+                            <cfqueryparam value="#arguments.street#" cfsqltype="cf_sql_varchar">,
+                            <cfqueryparam value="#arguments.pin#" cfsqltype="cf_sql_varchar">,
+                            <cfqueryparam value="#arguments.district#" cfsqltype="cf_sql_varchar">,
+                            <cfqueryparam value="#arguments.state#" cfsqltype="cf_sql_varchar">,
+                            <cfqueryparam value="#arguments.country#" cfsqltype="cf_sql_varchar">,
+                            <cfqueryparam value="#arguments.mail#" cfsqltype="cf_sql_varchar">,
+                            <cfqueryparam value="#arguments.phone#" cfsqltype="cf_sql_varchar">,
+                            <cfqueryparam value="#session.userId#" cfsqltype="cf_sql_varchar">,
+                            <cfqueryparam value="#isActive#" cfsqltype="cf_sql_bit">
+                        );
+                    </cfquery>
+                </cfif>
             <cfelse>
                 <cfset arrayAppend(errorMessages, "Row " & row.RowNum & ": " & arrayToList(rowErrors))>
             </cfif>
         </cfloop>
-
+        <cfreturn "inserted successfully">
     </cffunction>
 
     <cffunction  name="viewContactExcel" access="remote" returnType="query">
