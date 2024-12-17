@@ -328,8 +328,9 @@
     
                                             <cfset filePath = getDirectoryFromPath(cffile.serverFile) & cffile.serverFile>
                                             <cfset excelRead = createObject("component","components.contactDetails")>
+                                            <cfset objExcel = excelRead.processExcel()>
                                             <cfset result = excelRead.processExcel(filePath = filePath)>
-                                            
+                                            #objExcel#
                                         </cfif>
 
                                     </div>

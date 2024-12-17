@@ -149,8 +149,7 @@ function excelCreate(value){
             console.log(filePath)
             fileDownload(filePath,"contactDetails.xlsx")
         }
-    })
-    
+    })  
 }
 
 function fileDownload(url,file){
