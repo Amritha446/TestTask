@@ -321,18 +321,11 @@
                                         </form>
 
                                         <cfif structKeyExists(form, "exclFile")>
-                                            <cffile action="upload" 
-                                                filefield="exclFile" 
-                                                destination="C:\ColdFusion2021\cfusion\wwwroot\Amritha_CF\testTask\TestTask\assets1" 
-                                                nameconflict="overwrite">
-    
-                                            <cfset filePath = getDirectoryFromPath(cffile.serverFile) & cffile.serverFile>
+                                           
                                             <cfset excelRead = createObject("component","components.contactDetails")>
-                                            <cfset objExcel = excelRead.processExcel()>
-                                            <cfset result = excelRead.processExcel(filePath = filePath)>
-                                            #objExcel#
+                                            <cfset objExcel = excelRead.processExcelFile()>
+                                            <cfdump  var="#objExcel#">
                                         </cfif>
-
                                     </div>
                                 </div>
                             </div>
