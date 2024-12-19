@@ -443,8 +443,8 @@
         <cfset local.todaysDate = dateformat(Now())>
         <!--- <cfif arguments.useState = "allContacts"> --->
             <cfset local.result = viewContact()>
-        <!--- <cfelse> --->
-            <cfset local.result1 = viewExcelContact()>
+        <!--- <cfelse> 
+            <cfset local.result1 = viewExcelContact()>--->
         <!--- </cfif> --->
         <cfset roleArray = arrayNew(1)>
         <cfloop query = "result">
@@ -460,91 +460,142 @@
         <cfreturn "#local.id#.xlsx">
     </cffunction>
 
-    <cffunction name = "processExcel" access = "public" returnType = "String">
+    <cffunction  name="processExcelFile" access="remote" returnType="any">
+        <cfset local.id = createUUID()>
         <cfset local.result = viewExcelContact()>
-        <cfargument name = "filePath">
+        <cffile action="upload" 
+            filefield="exclFile" 
+            destination="C:\inetpub\wwwroot\TestTask\assets1" 
+            nameconflict="overwrite">
+        <cfset local.filePath = getDirectoryFromPath(cffile.serverFile) & cffile.serverFile>
         <cfspreadsheet action="read" 
-                       src="#arguments.filePath#" 
-                       sheet="1" 
-                       query="spreadsheetData">
+            src="#form.exclFile#"
+            sheet="1" 
+            query="spreadsheetData"
+            headerRow="1"
+            excludeHeaderRow="true">
         
-        <cfset validData = []>
-        <cfset errorMessages = []>
-        <cfloop query="#spreadsheetData#">
-            <cfset rowErrors = []>
+        <!--- <cfset validData = []> --->
+        <cfset missingData = []>
+    
+        <cfloop query="spreadsheetData">
+            <cfset columnMissing = []>
+            <!--- <cfif len(trim(row.Column1)) EQ 0>
+                <cfset arrayAppend(columnMissing, "error")>
+            </cfif> --->
+            
+            <cfif arrayLen(columnMissing) EQ 0>
+            
+                <!--- <cfset arrayAppend(validData, row)> --->
+                <cfquery name = "countMail">
+                    SELECT
+                        COUNT(mail)
+                    AS 
+                        recordCount
+                    FROM 
+                        contact
+                    WHERE
+                        mail = <cfqueryparam value="#spreadsheetData.mail#" cfsqltype="cf_sql_varchar">;
+                </cfquery>
+                 <cfloop list = "#spreadsheetData.ColumnList#" item = "columnName">
+                    <cfif columnName EQ "">
+                        <cfset arrayAppend(columnMissing,columnName)>
+                    </cfif>
+                </cfloop> 
 
-            <cfif len(trim(row.Column)) EQ 0>
-                <cfset arrayAppend(rowErrors, "Column cannot be empty.")>
-            </cfif>
-
-            <cfif arrayLen(rowErrors) EQ 0>
-                <cfset arrayAppend(validData, row)>
-                <cfif local.result.mail EQ row.mail>
+                <cfif countMail.recordCount EQ 1 >
                     <cfquery name="excelDataUpdate">
-                    </cfquery>
+                        UPDATE
+                            contact
+                        SET
+                            title = <cfqueryparam value="#spreadsheetData[title]#" cfsqltype="cf_sql_varchar">,
+                            text1 = <cfqueryparam value="#row.text1#" cfsqltype="cf_sql_varchar">,
+                            text2 = <cfqueryparam value="#row.text2#" cfsqltype="cf_sql_varchar">,
+                            gender = <cfqueryparam value="#row.gender#" cfsqltype="cf_sql_varchar">,
+                            dob = <cfqueryparam value="#row.dob#" cfsqltype="cf_sql_varchar">,
+                            address = <cfqueryparam value="#row.address#" cfsqltype="cf_sql_varchar">,
+                            street = <cfqueryparam value="#row.street#" cfsqltype="cf_sql_varchar">,
+                            pin = <cfqueryparam value="#row.pin#" cfsqltype="cf_sql_varchar">,
+                            district = <cfqueryparam value="#row.district#" cfsqltype="cf_sql_varchar">,
+                            state = <cfqueryparam value="#row.state#" cfsqltype="cf_sql_varchar">,
+                            country = <cfqueryparam value="#row.country#" cfsqltype="cf_sql_varchar">,
+                            mail = <cfqueryparam value="#row.mail#" cfsqltype="cf_sql_varchar">,
+                            phone = <cfqueryparam value="#row.phone#" cfsqltype="cf_sql_varchar">
+                        WHERE
+                            mail = <cfqueryparam value="#row.mail#" cfsqltype="cf_sql_varchar">;
+                    </cfquery> 
                 <cfelse>
                     <cfquery name="excelDataInsert">
                         INSERT INTO 
-                        contact(
-                            title,
-                            text1,
-                            text2,
-                            gender,
-                            dob, 
-                            address,
-                            street,
-                            pin,
-                            district,
-                            state,
-                            country,
-                            mail,
-                            phone,
-                            createdBy,
-                            IsActive 
-                        ) 
+                            contact(
+                                title,
+                                text1,
+                                text2,
+                                gender,
+                                dob, 
+                                address,
+                                street,
+                                pin,
+                                district,
+                                state,
+                                country,
+                                mail,
+                                phone
+                            ) 
                         values(
                             <cfqueryparam value="#row.title#" cfsqltype="cf_sql_varchar">,
-                            <cfqueryparam value="#arguments.text1#" cfsqltype="cf_sql_varchar">,
-                            <cfqueryparam value="#arguments.text2#" cfsqltype="cf_sql_varchar">,
-                            <cfqueryparam value="#arguments.gender#" cfsqltype="cf_sql_varchar">,
-                            <cfqueryparam value="#arguments.dob#" cfsqltype="cf_sql_varchar">,
-                            <cfqueryparam value="#arguments.address#" cfsqltype="cf_sql_varchar">,
-                            <cfqueryparam value="#arguments.street#" cfsqltype="cf_sql_varchar">,
-                            <cfqueryparam value="#arguments.pin#" cfsqltype="cf_sql_varchar">,
-                            <cfqueryparam value="#arguments.district#" cfsqltype="cf_sql_varchar">,
-                            <cfqueryparam value="#arguments.state#" cfsqltype="cf_sql_varchar">,
-                            <cfqueryparam value="#arguments.country#" cfsqltype="cf_sql_varchar">,
-                            <cfqueryparam value="#arguments.mail#" cfsqltype="cf_sql_varchar">,
-                            <cfqueryparam value="#arguments.phone#" cfsqltype="cf_sql_varchar">,
-                            <cfqueryparam value="#session.userId#" cfsqltype="cf_sql_varchar">,
-                            <cfqueryparam value="#isActive#" cfsqltype="cf_sql_bit">
+                            <cfqueryparam value="#row.text1#" cfsqltype="cf_sql_varchar">,
+                            <cfqueryparam value="#row.text2#" cfsqltype="cf_sql_varchar">,
+                            <cfqueryparam value="#row.gender#" cfsqltype="cf_sql_varchar">,
+                            <cfqueryparam value="#row.dob#" cfsqltype="cf_sql_varchar">,
+                            <cfqueryparam value="#row.address#" cfsqltype="cf_sql_varchar">,
+                            <cfqueryparam value="#row.street#" cfsqltype="cf_sql_varchar">,
+                            <cfqueryparam value="#row.pin#" cfsqltype="cf_sql_varchar">,
+                            <cfqueryparam value="#row.district#" cfsqltype="cf_sql_varchar">,
+                            <cfqueryparam value="#row.state#" cfsqltype="cf_sql_varchar">,
+                            <cfqueryparam value="#row.country#" cfsqltype="cf_sql_varchar">,
+                            <cfqueryparam value="#row.mail#" cfsqltype="cf_sql_varchar">,
+                            <cfqueryparam value="#row.phone#" cfsqltype="cf_sql_varchar">
                         );
                     </cfquery>
                 </cfif>
             <cfelse>
-                <cfset arrayAppend(errorMessages, "Row " & row.RowNum & ": " & arrayToList(rowErrors))>
+                <cfset arrayAppend(missingData, "Row " & row.RowNum & ": " & arrayToList(columnMissing))>
             </cfif>
-        </cfloop>
-        <cfreturn "inserted successfully">
-    </cffunction>
-
-    <cffunction  name="viewContactExcel" access="remote" returnType="query">
-        <cfquery name = "local.viewData">
-            SELECT name
-            FROM sys.columns
-            WHERE object_id = OBJECT_ID('contact');
-        </cfquery>
-        <cfreturn local.viewdata>
+        </cfloop> 
+        <cfset queryAddColumn(spreadsheetData, "result", missingData)>
+        <cfspreadsheet  action="write" filename="../assets1/#local.id#.xlsx" query="spreadsheetData">
+        <cfreturn "#local.id#.xlsx">
     </cffunction>
 
     <cffunction  name="plainExcel" access="remote" returnType="string" returnFormat="json">
         <cfset local.id = createUUID()>
-        <cfset local.result = viewContactExcel()>
-        <cfspreadsheet  action="write" filename="../assets/spreadsheet/#local.id#.xlsx" query = "local.result">
-        <!--- <cfloop array="#header#" index="rowIndex">
-            <cfspreadsheet action="write" data="#rowIndex#" startrow="#rowIndex#" />
-        </cfloop>
-        <cfset header = ["Title","First Name","Last Name","DOB"]> --->
+        <cfquery name = "local.viewData">
+            /*SELECT name
+            FROM sys.columns
+            WHERE object_id = OBJECT_ID('contact'); */
+            SELECT
+            top 0 title,
+                text1,
+                text2,
+                gender,
+                dob, 
+                address,
+                street,
+                pin,
+                district,
+                state,
+                country,
+                mail,
+                phone 
+            FROM 
+                contact;
+        </cfquery>
+        <!--- <cfset columnNames = []>
+        <cfloop query="#local.viewData#" item = "item">
+            <cfset arrayAppend(columnNames, {item})>
+        </cfloop> --->
+        <cfspreadsheet  action="write" filename="../assets/spreadsheet/#local.id#.xlsx" query = "local.viewData" >
         <cfreturn "#local.id#.xlsx">
     </cffunction>
     
