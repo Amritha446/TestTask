@@ -57,7 +57,7 @@
                         <cfloop array = "#result1#" item = "ormRow">
                             <div class="d-flex">
                                 <img src="assets/#ormRow.getimg()#" class="dataImg mt-1 mb-1">
-                                <div class="dataText ms-3">#ormRow.gettext1()# #ormRow.gettext2()#</div>
+                                <div class="dataText ms-3">#ormRow.getfirstName()# #ormRow.getlastName()#</div>
                                 <div class="dataText ms-3 me-5">#ormRow.getmail()#</div>
                                 <div class="dataText ms-5">#ormRow.getphone()#</div>
                                 <button type="submit" class="btn5 ms-4 mt-2" data-bs-toggle="modal" data-bs-target="##editContact" 
@@ -96,12 +96,12 @@
                                                     </div>
                                                     <div class="d-flex-column">
                                                         <div class="textHead">FIRST NAME</div>
-                                                        <input type="text" name="text1" class="editBtn2 ms-3" id="text1">
+                                                        <input type="text" name="firstName" class="editBtn2 ms-3" id="firstName">
                                                         <div class="error text-danger" id="firstnError"></div>
                                                     </div>
                                                     <div class="d-flex-column">
                                                         <div class="textHead">LAST NAME</div>
-                                                        <input type="text" name="text2" class="editBtn2 ms-3" id="text2">
+                                                        <input type="text" name="lastName" class="editBtn2 ms-3" id="lastName">
                                                         <div class="error text-danger" id="lastnError"></div>
                                                     </div>
                                                 </div>
@@ -210,8 +210,8 @@
                         <cfif structKeyExists(form,"submit") AND form.contactId == "">
                             <cfset editObj=createObject("component","components.contactDetails")>
                             <cfset resultContact=editObj.createContact(title = form.title,
-                            text1 = form.text1,
-                            text2 = form.text2,
+                            firstName = form.firstName,
+                            lastName = form.lastName,
                             gender = form.gender,
                             dob = form.dob,
                             img = form.img,
@@ -229,8 +229,8 @@
                         <cfif structKeyExists(form,"submit") AND form.contactId != "">
                             <cfset editObj=createObject("component","components.contactDetails")>
                             <cfset resultEdit=editObj.editContact(title = form.title,
-                            text1 = form.text1,
-                            text2 = form.text2,
+                            firstName = form.firstName,
+                            lastName = form.lastName,
                             gender = form.gender,
                             dob = form.dob,
                             img = form.img,
@@ -307,8 +307,8 @@
                                     <div class="modalContent ms-3 d-flex-column">
                                         <form method = "post" name = "form" enctype='multipart/form-data'>
                                             <div class = "d-flex excelBtn ">
-                                                <button type="submit" class="exclBtn1 text-light" name="withData" onClick="excelCreate()">Template With Data</button>
-                                                <button type="submit" class="exclBtn2 ms-2 text-light" name="plainData" id = "plainData" onClick = "plainExcel()">Plain Template</button>
+                                                <button type="button" class="exclBtn1 text-light" name="withData" onClick="excelCreate('')">Template With Data</button>
+                                                <button type="button" class="exclBtn2 ms-2 text-light" name="plainData" id = "plainData" onClick = "plainExcel()">Plain Template</button>
                                             </div>
                                             <h5 class="btnexcl">Upload Excel File</h5>
                                             <hr class="horizontalLineExcl">
@@ -324,7 +324,7 @@
                                            
                                             <cfset excelRead = createObject("component","components.contactDetails")>
                                             <cfset objExcel = excelRead.processExcelFile()>
-                                            <cfdump  var="#objExcel#">
+                                            
                                         </cfif>
                                     </div>
                                 </div>
@@ -372,8 +372,8 @@
                             <cfloop query = "#result#">
                                 <tr>
                                     <td>#result.title#</td>
-                                    <td>#result.text1#</td>
-                                    <td>#result.text2#</td>
+                                    <td>#result.firstName#</td>
+                                    <td>#result.lastName#</td>
                                     <td>#result.gender#</td>
                                     <td>#result.dob#</td>
                                     <td><img src="assets/#result.img#" alt="img"></td>

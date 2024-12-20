@@ -1,8 +1,8 @@
 function validation(){
     // alert(document.getElementById('multiSel').value);
     let title = document.forms["form"]["title"].value;
-    let firstname = document.forms["form"]["text1"].value;
-    let lastname = document.forms["form"]["text2"].value;
+    let firstname = document.forms["form"]["firstName"].value;
+    let lastname = document.forms["form"]["lastName"].value;
     let gender = document.forms["form"]["gender"].value;
     let dob = document.forms["form"]["dob"].value;
     let img = document.forms["form"]["img"].value;

@@ -41,8 +41,8 @@ function editOne(event){
             console.log(result)
             let formattedResult=JSON.parse(result);
             let title = formattedResult.DATA[0][0];
-            let text1 = formattedResult.DATA[0][1];
-            let text2 = formattedResult.DATA[0][2];
+            let firstName = formattedResult.DATA[0][1];
+            let lastName = formattedResult.DATA[0][2];
             let gender = formattedResult.DATA[0][3];
             let dob = formattedResult.DATA[0][4];
             let address = formattedResult.DATA[0][5];
@@ -57,8 +57,8 @@ function editOne(event){
             
             if(event.target.id == 'editb'){
             document.getElementById('title').value = title;
-            document.getElementById('text1').value = text1;
-            document.getElementById('text2').value = text2;
+            document.getElementById('firstName').value = firstName;
+            document.getElementById('lastName').value = lastName;
             document.getElementById('gender1').value = gender;
             document.getElementById('dob1').value = dob;
             document.getElementById('address1').value = address;
@@ -75,7 +75,7 @@ function editOne(event){
             let roleIds = formattedResult.DATA[0][16].split(",");
             $('#multiSel').val(roleIds)
             }else{
-            document.getElementById('name').textContent = title +text1 + " " + text2;
+            document.getElementById('name').textContent = title +firstName + " " + lastName;
             document.getElementById('gender').textContent = gender;
             document.getElementById('dob').textContent = dob;
             document.getElementById('address').textContent = address + ","+street+ "," + district + "," +state+ "," +country;
@@ -137,8 +137,8 @@ function deletePage(event){
 }
 
 function excelCreate(value){
-    
-    $.ajax({
+    console.log(value)
+    $.ajax({ 
         type:"POST",
         url:"components/contactDetails.cfc?method=createExcel",
         data:{useState:value},
