@@ -6,12 +6,12 @@
         
         <cfloop array="#data#" index="row">
             <!--- Extract row data (assuming the Excel file has columns 'Name' and 'Age') --->
-            <cfset name1 = row["text1"]>
-            <cfset name2 = row["text2"]>
+            <cfset name1 = row["firstName"]>
+            <cfset name2 = row["lastName"]>
             
             <!--- Insert data into the database --->
             <cfquery name="insertion">
-                INSERT INTO contact (text1, text2)
+                INSERT INTO contact (firstName, lastName)
                 VALUES (<cfqueryparam value="#name1#" cfsqltype="cf_sql_varchar">, <cfqueryparam value="#name2#" cfsqltype="cf_sql_varchar">)
             </cfquery>
         </cfloop>
