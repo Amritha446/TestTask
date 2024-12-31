@@ -86,7 +86,7 @@
         <cfset session.contactId = arguments.userId>
     </cffunction> --->
 
-    <cffunction  name="createContact" access="public" returnType="any">
+    <cffunction  name="createContact" access="remote" returnType="string">
         <cfargument  name="title">
         <cfargument  name="firstName">
         <cfargument  name="lastName">
@@ -103,16 +103,20 @@
         <cfargument  name="phone">
         <cfargument  name="multiSel">
         <cfset isActive ="1">
-        <cfset local.path = expandPath("./assets")>
-        <cffile  action="upload" destination="#local.path#" nameConflict="makeUnique">
-        <cfset local.value=cffile.clientFile> 
+        <cfif structKeyExists(form, "img")>
+            <cfset local.path = expandPath("./assets")>
+            <cffile  action="upload" destination="#local.path#" nameConflict="makeUnique">
+            <cfset local.value=cffile.clientFile> 
+        <cfelse>
+            <cfset local.value = "draft.JPG">
+        </cfif>
         <cfquery name="local.checkUser">
             SELECT 
                 mail
             FROM 
                 contact 
             WHERE 
-                phone=<cfqueryparam value="#arguments.phone#" cfsqltype="cf_sql_varchar">
+                mail=<cfqueryparam value="#arguments.mail#" cfsqltype="cf_sql_varchar">
         </cfquery>
         <cfif local.checkUser.recordCount EQ 0>
             <cfquery name="local.dataAdd" result = "keyValue">
@@ -169,14 +173,13 @@
                         contact_id,
                         role_id
                     ) 
-                values(
+                VALUES(
                     <cfqueryparam value="#keyValue.generatedKey#" cfsqltype="cf_sql_varchar">, 
                     <cfqueryparam value="#item#" cfsqltype="cf_sql_varchar">
                     )
                 </cfquery>
             </cfloop> 
-            <cflocation  url="home.cfm">
-            <cfreturn query>
+            <cfreturn "">
         <cfelse>
             <cfreturn "Email should be unique">
         </cfif>
@@ -335,7 +338,7 @@
         <cfreturn local.getOneContactdata>
     </cffunction> --->
 
-    <cffunction  name="editContact" access="public" returnType="query">
+    <cffunction  name="editContact" access="public" returnType="string">
         <cfargument  name="title">
         <cfargument  name="firstName">
         <cfargument  name="lastName">
@@ -353,10 +356,13 @@
         <cfargument  name="multiSel"> 
         <cfargument  name="contactId">
 
-        <cfset local.path = expandPath("./assets")>
-        <cffile  action="upload" destination="#local.path#" nameConflict="makeUnique">
-        <cfset local.value=cffile.clientFile> 
-
+        <cfif structKeyExists(form, "img")>
+            <cfset local.path = expandPath("./assets")>
+            <cffile  action="upload" destination="#local.path#" nameConflict="makeUnique">
+            <cfset local.value=cffile.clientFile> 
+        <cfelse>
+            <cfset local.value = "draft.JPG">
+        </cfif>
         <cfquery name="local.pageList">
             UPDATE contact 
             SET 
@@ -397,9 +403,8 @@
                 <cfqueryparam value = "#item#" cfsqltype="cf_sql_integer">)
             </cfquery>
         </cfloop> 
-        <cflocation  url="home.cfm">
-
-        <cfreturn query>
+        <!--- <cflocation  url="home.cfm"> --->
+        <cfreturn ""> 
     </cffunction>
 
     <cffunction  name="delContact" access="remote" returnType="void">
@@ -461,7 +466,6 @@
 
     <cffunction  name="processExcelFile" access="public" returnType="string">
         <cfset local.id = createUUID()>
-        <cfset local.result = viewExcelContact()>
         <cffile action="upload" 
             filefield="exclFile" 
             destination="C:\inetpub\wwwroot\TestTask\assets1" 
@@ -474,9 +478,10 @@
             headerRow="1"
             excludeHeaderRow="true">
         
-        <!--- <cfset validData = []> --->
         <cfset local.missingData = []>
+        <cfset local.validData = "">
         <cfset local.columnMissing = []>
+        <cfset local.roles = arrayNew(1)>
         <cfset local.columnNames = ["title",
                                     "firstName",
                                     "lastName",
@@ -491,7 +496,24 @@
                                     "mail",
                                     "phone"
                                     ]>
-        <cfloop query="spreadsheetData">  
+        <cfset local.roleSelect = multiSelection()>
+        <cfloop query="spreadsheetData"> 
+
+            <cfloop list="#spreadsheetData.roles#" item="item" delimiters = ",">
+                <cfset local.roles = []>
+                <cfset local.columnMissing = []>
+                <cfset validRole = 1>
+                <cfloop query = "#local.roleSelect#">
+                    <cfif item EQ local.roleSelect.role_name>
+                        <cfset arrayAppend(local.roles, local.roleSelect.role_id)>
+                        <cfset validRole = validRole * 0>        
+                    </cfif>
+                </cfloop>
+                <cfif validRole EQ 1>
+                    <cfset arrayAppend(columnMissing, "Rolename invalid")>
+                </cfif>
+            </cfloop>
+
             <cfloop array = "#columnNames#" item = "columnName">
                 <cfif len(trim(spreadsheetData[columnName].toString())) EQ 0>
                     <cfset arrayAppend(columnMissing, columnName)>
@@ -503,13 +525,22 @@
             <cfif len(trim(spreadsheetData.phone.toString())) NEQ 10>
                 <cfset arrayAppend(columnMissing, "Row #spreadsheetData.currentRow# has an invalid phone: #spreadsheetData.phone#")>
             </cfif>
-
-            <cfif arrayLen(columnMissing) EQ 0>
+            <cfif spreadsheetData.roles.toString() EQ "">
+                <cfset arrayAppend(columnMissing, "Enter role")>
+            </cfif>
+            <cfif NOT (spreadsheetData.gender EQ "Male" OR spreadsheetData.gender EQ "Female" OR spreadsheetData.gender EQ "Others")>
+                <cfset arrayAppend(columnMissing, "Enter valid gender (Male, Female, or Others)")>
+            </cfif>
+            <cfif NOT (spreadsheetData.title EQ "Mr." OR spreadsheetData.title EQ "Miss.")>
+                <cfset arrayAppend(columnMissing, "Enter name title")>
+            </cfif>
             
-                <!--- <cfset arrayAppend(validData, row)> --->
+            <cfif arrayLen(columnMissing) EQ 0>
+
                 <cfquery name = "local.countMail">
                     SELECT
-                        mail
+                        mail,
+                        userId
                     FROM    
                         contact
                     WHERE
@@ -522,7 +553,7 @@
                 </cfloop>
 
                 <cfif local.countMail.recordCount EQ 1 >
-                    <cfquery name="local.excelDataUpdate">
+                    <!--- <cfquery name="local.excelDataUpdate">
                         UPDATE
                             contact
                         SET
@@ -544,9 +575,55 @@
                             AND
                             createdBy = <cfqueryparam value="#session.userId#" cfsqltype="cf_sql_varchar">;
                     </cfquery> 
-                    <cfset arrayAppend(columnMissing,"updated")>
+
+                    <cfif arraylen(local.roles) GT 0>
+                        <cfquery name="local.deleteOldRoles">
+                            DELETE FROM 
+                                contact_role
+                            WHERE 
+                                contact_id = (SELECT userId FROM contact WHERE mail = <cfqueryparam value="#spreadsheetData.mail#" cfsqltype="cf_sql_varchar">)
+                        </cfquery>
+
+                        <cfloop array="#local.roles#" index="role">
+                            <cfquery name="local.insertRole">
+                                INSERT INTO 
+                                contact_role (
+                                    contact_id,
+                                    role_id
+                                )
+                                VALUES (
+                                    (SELECT userId FROM contact WHERE mail = <cfqueryparam value="#spreadsheetData.mail#" cfsqltype="cf_sql_varchar">),
+                                    <cfqueryparam value="#role#" cfsqltype="cf_sql_integer">
+                                )
+                            </cfquery>
+                        </cfloop>
+                    </cfif>  --->
+            
+                    <cfset local.contactId = local.countMail.userId>
+                    <cfset local.multiSel = arrayToList(local.roles)>
+                     <cfset editContact(
+                        title = spreadsheetData.title,
+                        firstName = spreadsheetData.firstName,
+                        lastName = spreadsheetData.lastName,
+                        gender = spreadsheetData.gender,
+                        dob = spreadsheetData.dob,
+                        img = "", 
+                        address = spreadsheetData.address,
+                        street = spreadsheetData.street,
+                        pin = spreadsheetData.pin,
+                        district = spreadsheetData.district,
+                        state = spreadsheetData.state,
+                        country = spreadsheetData.country,
+                        mail = spreadsheetData.mail,
+                        phone = spreadsheetData.phone,
+                        IsActive = 1,
+                        multiSel = local.multiSel,
+                        contactId = local.contactId
+                    )>  
+                    <cfset arrayAppend(missingData,"updated")>
+
                 <cfelseif local.countMail.recordCount EQ 0>
-                    <cfquery name="local.excelDataInsert">
+                    <!--- <cfquery name="local.excelDataInsert">
                         INSERT INTO 
                             contact(
                                 title,
@@ -583,14 +660,62 @@
                             <cfqueryparam value="#session.userId#" cfsqltype="cf_sql_varchar">
                         );
                     </cfquery>
-                    <cfset arrayAppend(columnMissing,"inserted")>
+                    <cfif arraylen(local.roles) GT 0>
+                        <cfloop array="#local.roles#" index="role">
+                            <cfquery name="local.insertRole">
+                                INSERT INTO 
+                                contact_role (
+                                    contact_id,
+                                    role_id
+                                )
+                                VALUES (
+                                    (SELECT userId FROM contact WHERE mail = <cfqueryparam value="#spreadsheetData.mail#" cfsqltype="cf_sql_varchar">),
+                                    <cfqueryparam value="#role#" cfsqltype="cf_sql_integer">
+                                )
+                            </cfquery>
+                        </cfloop>
+                    </cfif> --->
+
+                    <cfset local.multiSel = arrayToList(local.roles)>
+                    <cfset local.inserted = createContact(
+                        title = spreadsheetData.title,
+                        firstName = spreadsheetData.firstName,
+                        lastName = spreadsheetData.lastName,
+                        gender = spreadsheetData.gender,
+                        dob = spreadsheetData.dob,
+                        img = "", 
+                        address = spreadsheetData.address,
+                        street = spreadsheetData.street,
+                        pin = spreadsheetData.pin,
+                        district = spreadsheetData.district,
+                        state = spreadsheetData.state,
+                        country = spreadsheetData.country,
+                        mail = spreadsheetData.mail,
+                        phone = spreadsheetData.phone,
+                        multiSel = local.multiSel,
+                        IsActive= 1
+                    )> 
+
+                    <cfset arrayAppend(missingData,"inserted")>
                 </cfif>
             <cfelse>
-                <cfset arrayAppend(missingData, arrayToList(columnMissing))> 
+                <cfset arrayAppend(missingData, arrayToList(columnMissing))>
             </cfif>
         </cfloop>
         <cfset queryAddColumn(spreadsheetData, "result",missingData)>
-        <cfspreadsheet  action="write" filename="../assets1/result.xlsx" query="spreadsheetData" overwrite = "true">
+        <cfset local.sortedQuery = QuerySort(spreadsheetData, function(obj1, obj2){
+			var check1 = FindNoCase("added", obj1.result) OR FindNoCase("updated", obj1.result);
+			var check2 = FindNoCase("added", obj2.result) OR FindNoCase("updated", obj2.result);
+
+			if (check1 AND NOT check2) {
+				return 1;
+			}
+			else if (check2 AND NOT check1) {
+				return -1;
+			}
+			return 0;
+		})>
+        <cfspreadsheet  action="write" filename="../assets1/result.xlsx" query="local.sortedQuery" overwrite = "true">
         <cfreturn "result.xlsx">
     </cffunction>
 
@@ -619,7 +744,7 @@
                 contact;
         </cfquery>
         <cfset local.arrayy = []>
-        <cfset queryAddColumn(local.viewData, "role",local.arrayy)>
+        <cfset queryAddColumn(local.viewData, "roles",local.arrayy)>
         <cfspreadsheet  action="write" filename="../assets/spreadsheet/#local.id#.xlsx" query = "local.viewData" >
         <cfreturn "#local.id#.xlsx">
     </cffunction>

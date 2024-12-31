@@ -224,7 +224,7 @@
                             mail = form.mail,
                             phone = form.phone,
                             multiSel = form.multiSel)>
-                            #resultContact#
+                            <cflocation  url="home.cfm">
                         </cfif>
                         <cfif structKeyExists(form,"submit") AND form.contactId != "">
                             <cfset editObj=createObject("component","components.contactDetails")>
@@ -245,7 +245,7 @@
                             userId = form.contactId,
                             contactId = form.contactId,
                             multiSel = form.multiSel)>
-                            #resultEdit#
+                            <cflocation  url="home.cfm">
                         </cfif>
                         <div class="modal fade" id="viewContact" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
                             <div class="modal-dialog">
@@ -324,7 +324,7 @@
                                            
                                             <cfset excelRead = createObject("component","components.contactDetails")>
                                             <cfset objExcel = excelRead.processExcelFile()>
-                                            
+                                            <cflocation  url="home.cfm">
                                         </cfif>
                                     </div>
                                 </div>
