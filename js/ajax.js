@@ -119,7 +119,7 @@ function editOne(event){
         }
     })
 }
-
+/* (SELECT userId FROM contact WHERE mail = <cfqueryparam value="#spreadsheetData.mail#" cfsqltype="cf_sql_varchar">) */
 function deletePage(event){
     if(confirm("Confirm delete?")){
         $.ajax({
