@@ -31,7 +31,7 @@
                     </button>
                 </div>
                 <div class="d-flex secondSection">
-                    <div class="leftSide mb-2 d-flex-column">
+                    <div class="leftSide mb-2 d-flex flex-column">
                         <cfif structKeyExists(session,"googleAccnt")>
                             <img src="#session.profile#" class="userImg mt-3 ms-4 ps-2">
                         <cfelse>
@@ -43,7 +43,7 @@
                         <button type="button" class="btn4 ms-3 mt-2" id="upldExcelFile" data-bs-toggle="modal" data-bs-target="##upldExcel">UPLOAD</button>
                     </div>
 
-                    <div class="rightSide ms-5 mb-1 d-flex-column">
+                    <div class="rightSide ms-5 mb-1 d-flex flex-column">
                         <div class="headCreate d-flex mt-3">
                             <p class="textCreate">Name</p>
                             <p class="textCreate1">Email Id</p>
@@ -85,7 +85,7 @@
                                                     PERSONAL CONTACT
                                                 </div><hr class="horizontalLine1 mt-1">                                                
                                                 <div class="d-flex ">
-                                                    <div class="d-flex-column">
+                                                    <div class="d-flex flex-column">
                                                         <div class="textHead">Title</div>
                                                         <select name="title" class="editBtn ms-3 mt-1" id="title">
                                                             <option></option>
@@ -94,19 +94,19 @@
                                                         </select>
                                                         <div class="error text-danger" id="titleError"></div>
                                                     </div>
-                                                    <div class="d-flex-column">
+                                                    <div class="d-flex flex-column">
                                                         <div class="textHead">FIRST NAME</div>
                                                         <input type="text" name="firstName" class="editBtn2 ms-3" id="firstName">
                                                         <div class="error text-danger" id="firstnError"></div>
                                                     </div>
-                                                    <div class="d-flex-column">
+                                                    <div class="d-flex flex-column">
                                                         <div class="textHead">LAST NAME</div>
                                                         <input type="text" name="lastName" class="editBtn2 ms-3" id="lastName">
                                                         <div class="error text-danger" id="lastnError"></div>
                                                     </div>
                                                 </div>
                                                 <div class="d-flex">
-                                                    <div class="d-flex-column">
+                                                    <div class="d-flex flex-column">
                                                         <div class="textHead">GENDER</div>
                                                         <select class="editBtn2 me-5 ms-3" name="gender" id="gender1">
                                                             <option></option>
@@ -116,7 +116,7 @@
                                                         </select>
                                                         <div class="error text-danger" id="genderError"></div>
                                                     </div>
-                                                    <div class="d-flex-column">
+                                                    <div class="d-flex flex-column">
                                                         <div class="textHead">DOB</div>
                                                         <input type="date" name="dob" class="editBtn2 ms-3" id="dob1" 
                                                         max="#dateformat(now(),"yyyy-mm-dd")#" max-length="8">   
@@ -124,7 +124,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="d-flex ">
-                                                    <div class="d-flex-column">
+                                                    <div class="d-flex flex-column">
                                                         <div class="textHead">UPLOAD PHOTO</div>
                                                         <input type="file" class="editBtn1 ms-3 " name="img" id="img1">
                                                         <div class="error text-danger" id="imgError"></div>
@@ -136,55 +136,55 @@
                                                 </div>
                                                 <hr class="horizontalLine1 mt-1">
                                                 <div class="d-flex ">
-                                                    <div class="d-flex-column">
+                                                    <div class="d-flex flex-column">
                                                         <div class="textHead ">ADDRESS</div>
                                                         <input type="textarea" name="address" class="editBtn2 ms-3" id="address1">
                                                         <div class="error text-danger" id="addressError"></div>
                                                     </div>
-                                                    <div class="d-flex-column">
+                                                    <div class="d-flex flex-column">
                                                         <div class="textHead ms-5">STREET</div>
                                                         <input type="text" name="street" class="editBtn2 ms-5" id="street1">
                                                         <div class="error text-danger" id="streetError"></div>
                                                     </div>
                                                 </div>
                                                 <div class="d-flex ">
-                                                    <div class="d-flex-column">
+                                                    <div class="d-flex flex-column">
                                                         <div class="textHead ">PINCODE</div>
                                                         <input type="text" name="pin" class="editBtn2 ms-3" id="pin">
                                                         <div class="error text-danger" id="pinError"></div>
                                                     </div>
-                                                    <div class="d-flex-column">
+                                                    <div class="d-flex flex-column">
                                                         <div class="textHead ms-5">DISTRICT</div>
                                                         <input type="text" name="district" class="editBtn2 ms-5" id="district1">
                                                         <div class="error text-danger" id="districtError"></div>
                                                     </div>
                                                 </div>
                                                 <div class="d-flex ">
-                                                    <div class="d-flex-column">
+                                                    <div class="d-flex flex-column">
                                                         <div class="textHead ">STATE</div>
                                                         <input type="text" name="state" class="editBtn2 ms-3" id="state1">
                                                         <div class="error text-danger" id="stateError"></div>
                                                     </div>
-                                                    <div class="d-flex-column">
+                                                    <div class="d-flex flex-column">
                                                         <div class="textHead ms-5">COUNTRY</div>
                                                         <input type="text" name="country" class="editBtn2 ms-5" id="country1">
                                                         <div class="error text-danger" id="countryError"></div>
                                                     </div>
                                                 </div>
                                                 <div class="d-flex ">
-                                                    <div class="d-flex-column">
+                                                    <div class="d-flex flex-column">
                                                         <div class="textHead ">EMAIL</div>
                                                         <input type="mail" name="mail" class="editBtn2 ms-3" id="mail">
                                                         <div class="error text-danger" id="mailError"></div>
                                                     </div>
-                                                    <div class="d-flex-column">
+                                                    <div class="d-flex flex-column">
                                                         <div class="textHead ms-5">PHONE NUMBER</div>
                                                         <input type="text" name="phone" class="editBtn2 ms-5" id="phone1">
                                                         <div class="error text-danger" id="phoneError"></div>
                                                     </div>
                                                 </div>
 
-                                                <div class="d-flex-column" id = "multiSelect">
+                                                <div class="d-flex flex-column" id = "multiSelect">
                                                     <cfset result = createObject("component","components.contactDetails")>
                                                     <cfset multiSelect = result.multiSelection()>
                                                     <div class="textHead ">ROLE</div>
@@ -304,7 +304,7 @@
                         <div class="modal fade" id="upldExcel" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
                             <div class="modal-dialog">
                                 <div class="modal-content">
-                                    <div class="modalContent ms-3 d-flex-column">
+                                    <div class="modalContent ms-3 d-flex flex-column">
                                         <form method = "post" name = "form" enctype='multipart/form-data'>
                                             <div class = "d-flex excelBtn ">
                                                 <button type="button" class="exclBtn1 text-light" name="withData" onClick="excelCreate('')">Template With Data</button>
@@ -321,7 +321,6 @@
                                         </form>
 
                                         <cfif structKeyExists(form, "exclFile")>
-                                           
                                             <cfset excelRead = createObject("component","components.contactDetails")>
                                             <cfset objExcel = excelRead.processExcelFile()>
                                             <cflocation  url="home.cfm">

@@ -158,14 +158,6 @@
                     1
                 )
             </cfquery>
-            <!--- <cfquery name="local.idSelect">
-                select 
-                userId 
-                from 
-                contact 
-                where 
-                mail = <cfqueryparam value="#arguments.mail#" cfsqltype="cf_sql_varchar">;
-            </cfquery> --->
             <cfloop list="#arguments.multiSel#" item="item"> 
                 <cfquery name = "local.selectedOptionInsertion">
                 INSERT INTO 
@@ -240,7 +232,7 @@
         <cfreturn local.viewdata>  
     </cffunction>
     
-     <!--- <cffunction name="getRolesById" access="remote" returnType="query" returnFormat="json">
+    <!--- <cffunction name="getRolesById" access="remote" returnType="query" returnFormat="json">
         <cfargument name = "contactId">
         <cfquery name = "local.getContactRoles">
             select 
@@ -360,7 +352,7 @@
             <cfset local.path = expandPath("./assets")>
             <cffile  action="upload" destination="#local.path#" nameConflict="makeUnique">
             <cfset local.value=cffile.clientFile> 
-        <cfelse>
+        <cfelse> 
             <cfset local.value = "draft.JPG">
         </cfif>
         <cfquery name="local.pageList">
@@ -465,7 +457,7 @@
     </cffunction>
 
     <cffunction  name="processExcelFile" access="public" returnType="string">
-        <cfset local.id = createUUID()>
+        <!--- <cfset local.id = createUUID()> --->
         <cffile action="upload" 
             filefield="exclFile" 
             destination="C:\inetpub\wwwroot\TestTask\assets1" 
@@ -479,7 +471,6 @@
             excludeHeaderRow="true">
         
         <cfset local.missingData = []>
-        <cfset local.validData = "">
         <cfset local.columnMissing = []>
         <cfset local.roles = arrayNew(1)>
         <cfset local.columnNames = ["title",
@@ -553,52 +544,6 @@
                 </cfloop>
 
                 <cfif local.countMail.recordCount EQ 1 >
-                    <!--- <cfquery name="local.excelDataUpdate">
-                        UPDATE
-                            contact
-                        SET
-                            title = <cfqueryparam value="#spreadsheetData.title#" cfsqltype="cf_sql_varchar">,
-                            firstName = <cfqueryparam value="#spreadsheetData.firstName#" cfsqltype="cf_sql_varchar">,
-                            lastName = <cfqueryparam value="#spreadsheetData.lastName#" cfsqltype="cf_sql_varchar">,
-                            gender = <cfqueryparam value="#spreadsheetData.gender#" cfsqltype="cf_sql_varchar">,
-                            dob = <cfqueryparam value="#spreadsheetData.dob#" cfsqltype="cf_sql_varchar">,
-                            address = <cfqueryparam value="#spreadsheetData.address#" cfsqltype="cf_sql_varchar">,
-                            street = <cfqueryparam value="#spreadsheetData.street#" cfsqltype="cf_sql_varchar">,
-                            pin = <cfqueryparam value="#spreadsheetData.pin#" cfsqltype="cf_sql_varchar">,
-                            district = <cfqueryparam value="#spreadsheetData.district#" cfsqltype="cf_sql_varchar">,
-                            state = <cfqueryparam value="#spreadsheetData.state#" cfsqltype="cf_sql_varchar">,
-                            country = <cfqueryparam value="#spreadsheetData.country#" cfsqltype="cf_sql_varchar">,
-                            phone = <cfqueryparam value="#spreadsheetData.phone#" cfsqltype="cf_sql_varchar">,
-                            IsActive = 1
-                        WHERE
-                            mail = <cfqueryparam value="#spreadsheetData.mail#" cfsqltype="cf_sql_varchar">
-                            AND
-                            createdBy = <cfqueryparam value="#session.userId#" cfsqltype="cf_sql_varchar">;
-                    </cfquery> 
-
-                    <cfif arraylen(local.roles) GT 0>
-                        <cfquery name="local.deleteOldRoles">
-                            DELETE FROM 
-                                contact_role
-                            WHERE 
-                                contact_id = (SELECT userId FROM contact WHERE mail = <cfqueryparam value="#spreadsheetData.mail#" cfsqltype="cf_sql_varchar">)
-                        </cfquery>
-
-                        <cfloop array="#local.roles#" index="role">
-                            <cfquery name="local.insertRole">
-                                INSERT INTO 
-                                contact_role (
-                                    contact_id,
-                                    role_id
-                                )
-                                VALUES (
-                                    (SELECT userId FROM contact WHERE mail = <cfqueryparam value="#spreadsheetData.mail#" cfsqltype="cf_sql_varchar">),
-                                    <cfqueryparam value="#role#" cfsqltype="cf_sql_integer">
-                                )
-                            </cfquery>
-                        </cfloop>
-                    </cfif>  --->
-            
                     <cfset local.contactId = local.countMail.userId>
                     <cfset local.multiSel = arrayToList(local.roles)>
                      <cfset editContact(
@@ -619,63 +564,10 @@
                         IsActive = 1,
                         multiSel = local.multiSel,
                         contactId = local.contactId
-                    )>  
+                    )>
                     <cfset arrayAppend(missingData,"updated")>
 
                 <cfelseif local.countMail.recordCount EQ 0>
-                    <!--- <cfquery name="local.excelDataInsert">
-                        INSERT INTO 
-                            contact(
-                                title,
-                                firstName,
-                                lastName,
-                                gender,
-                                dob, 
-                                address,
-                                street,
-                                pin,
-                                district,
-                                state,
-                                country,
-                                mail,
-                                phone,
-                                IsActive,
-                                createdBy
-                            ) 
-                        values(
-                            <cfqueryparam value="#spreadsheetData.title#" cfsqltype="cf_sql_varchar">,
-                            <cfqueryparam value="#spreadsheetData.firstName#" cfsqltype="cf_sql_varchar">,
-                            <cfqueryparam value="#spreadsheetData.lastName#" cfsqltype="cf_sql_varchar">,
-                            <cfqueryparam value="#spreadsheetData.gender#" cfsqltype="cf_sql_varchar">,
-                            <cfqueryparam value="#spreadsheetData.dob#" cfsqltype="cf_sql_date">,
-                            <cfqueryparam value="#spreadsheetData.address#" cfsqltype="cf_sql_varchar">,
-                            <cfqueryparam value="#spreadsheetData.street#" cfsqltype="cf_sql_varchar">,
-                            <cfqueryparam value="#spreadsheetData.pin#" cfsqltype="cf_sql_varchar">,
-                            <cfqueryparam value="#spreadsheetData.district#" cfsqltype="cf_sql_varchar">,
-                            <cfqueryparam value="#spreadsheetData.state#" cfsqltype="cf_sql_varchar">,
-                            <cfqueryparam value="#spreadsheetData.country#" cfsqltype="cf_sql_varchar">,
-                            <cfqueryparam value="#spreadsheetData.mail#" cfsqltype="cf_sql_varchar">,
-                            <cfqueryparam value="#spreadsheetData.phone#" cfsqltype="cf_sql_varchar">,
-                            1,
-                            <cfqueryparam value="#session.userId#" cfsqltype="cf_sql_varchar">
-                        );
-                    </cfquery>
-                    <cfif arraylen(local.roles) GT 0>
-                        <cfloop array="#local.roles#" index="role">
-                            <cfquery name="local.insertRole">
-                                INSERT INTO 
-                                contact_role (
-                                    contact_id,
-                                    role_id
-                                )
-                                VALUES (
-                                    (SELECT userId FROM contact WHERE mail = <cfqueryparam value="#spreadsheetData.mail#" cfsqltype="cf_sql_varchar">),
-                                    <cfqueryparam value="#role#" cfsqltype="cf_sql_integer">
-                                )
-                            </cfquery>
-                        </cfloop>
-                    </cfif> --->
-
                     <cfset local.multiSel = arrayToList(local.roles)>
                     <cfset local.inserted = createContact(
                         title = spreadsheetData.title,
@@ -695,8 +587,7 @@
                         multiSel = local.multiSel,
                         IsActive= 1
                     )> 
-
-                    <cfset arrayAppend(missingData,"inserted")>
+                    <cfset arrayAppend(missingData,"added")>
                 </cfif>
             <cfelse>
                 <cfset arrayAppend(missingData, arrayToList(columnMissing))>
@@ -706,7 +597,7 @@
         <cfset local.sortedQuery = QuerySort(spreadsheetData, function(obj1, obj2){
 			var check1 = FindNoCase("added", obj1.result) OR FindNoCase("updated", obj1.result);
 			var check2 = FindNoCase("added", obj2.result) OR FindNoCase("updated", obj2.result);
-
+            
 			if (check1 AND NOT check2) {
 				return 1;
 			}
@@ -715,7 +606,7 @@
 			}
 			return 0;
 		})>
-        <cfspreadsheet  action="write" filename="../assets1/result.xlsx" query="local.sortedQuery" overwrite = "true">
+        <cfspreadsheet  action="write" filename="../assets1/result.xlsx" query="local.sortedQuery" overwrite = "true">  
         <cfreturn "result.xlsx">
     </cffunction>
 
@@ -727,7 +618,7 @@
             FROM sys.columns
             WHERE object_id = OBJECT_ID('contact'); */
             SELECT
-            top 0 title,
+                top 0 title,
                 firstName,
                 lastName,
                 gender,

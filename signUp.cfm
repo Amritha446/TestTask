@@ -33,17 +33,17 @@
                     <div class="rightSection mb-5">
                         <p class=" heading fs-3 mt-2 ">SIGN UP</p>
                         <form method="post" class="ms-5" enctype="multipart/form-data" name="form">
-                            <div class="input d-flex-column">
+                            <div class="input d-flex flex-column">
                                <div class="text-secondary mt-3 ms-2"> Full Name</div>
                                 <input type="text" name="fullName" class="inputs" required>
                                 <div class="error text-danger" id="fullnameError"></div>
                             </div>
-                            <div class="input d-flex-column">
+                            <div class="input d-flex flex-column">
                                <div class="text-secondary mt-3 ms-2"> Email Id</div>
                                 <input type="text" name="mail" class="inputs">
                                 <div class="error text-danger" id="mailError"></div>
                             </div>
-                            <div class="input d-flex-column">
+                            <div class="input d-flex flex-column">
                                <div class="text-secondary mt-3 ms-2"> Username</div>
                                 <input type="text" name="userName" class="inputs">
                                 <div class="error text-danger" id="userError"></div>
@@ -53,12 +53,12 @@
                                 <input type="password" name="userPassword1" class="inputs">
                                 <div class="error text-danger" id="pass1Error"></div>
                             </div>
-                            <div class="input d-flex-column">
+                            <div class="input d-flex flex-column">
                                <div class="text-secondary mt-3 ms-2"> Confirm Password</div>
                                 <input type="password" name="userPassword2" class="inputs">
                                 <div class="error text-danger" id="pass2Error"></div>
                             </div>
-                            <div class="input d-flex-column">
+                            <div class="input d-flex flex-column">
                                <div class="text-secondary mt-3 ms-2"> Choose Profile pic</div>
                                 <input type="file" name="profile" class="inputs">
                                 <div class="error text-danger" id="img1Error"></div>

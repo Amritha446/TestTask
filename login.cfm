@@ -32,7 +32,7 @@
                     <div class="rightSection mb-5">
                         <h5 class=" heading fs-3 mt-2">LOGIN</h5>
                         <form method="post" class="ms-5" name="form">
-                            <div class="input d-flex-column">
+                            <div class="input d-flex flex-column">
                                <div class="text-secondary mt-2 ms-4"> Username</div>
                                 <input type="text" name="userName" class="inputs">
                                 <div class="error text-danger" id="usersError"></div>
